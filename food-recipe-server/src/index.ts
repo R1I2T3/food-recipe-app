@@ -6,6 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import AuthRouter from "./routes/auth";
 import { poweredBy } from "hono/powered-by";
 const app = new Hono();
+import UserInfoRouter from "./routes/user/user-info";
 
 // middlewares
 app.use(logger());
@@ -23,5 +24,6 @@ cloudinary.config({
 // All Api routes
 
 app.route("/api/v1", AuthRouter);
+app.route("/api/v1", UserInfoRouter);
 
 export default app;
