@@ -12,3 +12,75 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum FoodType {
+  Veg
+  NonVeg
+}
+
+enum FoodCusine {
+  Thai
+  American
+  Chinese
+  Mexican
+  India
+  Nepali
+  Spanish
+}
+
+model User {
+  id            String        @unique @default(uuid())
+  username      String        @unique
+  password      String
+  full_name     String
+  avatar_url    String        @default("")
+  gender        Gender
+  date_of_birth DateTime
+  createdAt     DateTime      @default(now())
+  Recipe        Recipe[]
+  LikedRecipe   LikedRecipe[]
+
+  @@map("user")
+}
+
+model Recipe {
+  id                 String        @unique @default(uuid())
+  name               String
+  instruction        String
+  type               FoodType
+  cusine             FoodCusine
+  youtube_video_link String?
+  food_image_url     String
+  Ingredient         Ingredient[]
+  creatorId          String
+  creator            User          @relation(fields: [creatorId], references: [id])
+  LikedRecipe        LikedRecipe[]
+
+  @@map("recipe")
+}
+
+model Ingredient {
+  id       String @unique @default(uuid())
+  name     String
+  quantity Int
+  unit     Int
+  recipeId String
+  Recipe   Recipe @relation(fields: [recipeId], references: [id])
+
+  @@map("ingredient")
+}
+
+model LikedRecipe {
+  id          String   @unique @default(uuid())
+  userId      String
+  recipeId    String
+  date_liked  DateTime @default(now())
+  LikedUser   User     @relation(fields: [userId], references: [id])
+  LikedRecipe Recipe   @relation(fields: [recipeId], references: [id])
+}
