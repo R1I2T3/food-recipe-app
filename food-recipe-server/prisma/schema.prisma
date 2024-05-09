@@ -35,16 +35,15 @@ enum FoodCusine {
 }
 
 model User {
-  id            String        @unique @default(uuid())
-  username      String        @unique
-  password      String
-  full_name     String
-  avatar_url    String        @default("")
-  gender        Gender
-  date_of_birth DateTime
-  createdAt     DateTime      @default(now())
-  Recipe        Recipe[]
-  LikedRecipe   LikedRecipe[]
+  id          String        @unique @default(uuid())
+  username    String        @unique
+  password    String
+  full_name   String
+  avatar_url  String        @default("")
+  gender      Gender
+  createdAt   DateTime      @default(now())
+  Recipe      Recipe[]
+  LikedRecipe LikedRecipe[]
 
   @@map("user")
 }
