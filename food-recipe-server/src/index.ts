@@ -7,7 +7,7 @@ import AuthRouter from "./routes/auth";
 import { poweredBy } from "hono/powered-by";
 import UserRouter from "./routes/user/user";
 import RecipeRouter from "./routes/recipe";
-
+import FavouriteRouter from "./routes/Liked";
 const app = new Hono();
 
 // middlewares
@@ -28,5 +28,6 @@ cloudinary.config({
 app.route("/api/v1", AuthRouter);
 app.route("/api/v1", UserRouter);
 app.route("api/v1", RecipeRouter);
+app.route("api/v1", FavouriteRouter);
 
 export default app;

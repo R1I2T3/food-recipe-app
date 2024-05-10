@@ -29,7 +29,7 @@ enum FoodCuisine {
   American
   Chinese
   Mexican
-  India
+  Indian
   Nepali
   Spanish
 }
@@ -81,4 +81,6 @@ model LikedRecipe {
   date_liked  DateTime @default(now())
   LikedUser   User     @relation(fields: [userId], references: [id])
   LikedRecipe Recipe   @relation(fields: [recipeId], references: [id])
+
+  @@map("likedrecipe")
 }

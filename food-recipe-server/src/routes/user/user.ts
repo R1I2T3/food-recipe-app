@@ -99,8 +99,6 @@ route.get("/created-recipe/:id", ProtectRoute, async (c) => {
     }
     const skip = parseInt(skipQueryParam);
     const userID = c.req.param("id");
-    console.log(userID);
-
     const createdRecipeByUser = await db.recipe.findMany({
       skip: skip * 10,
       take: 10,
