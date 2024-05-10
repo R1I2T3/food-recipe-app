@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const IngredientSchema = z.object({
+export const IngredientSchema = z.object({
   name: z.string(),
   quantity: z.coerce.number(),
 });
