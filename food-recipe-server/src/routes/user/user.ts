@@ -91,4 +91,26 @@ route.put(
   }
 );
 
+route.get("/created-recipe/:id", ProtectRoute, async (c) => {
+  try {
+    const { skip: skipQueryParam } = c.req.query();
+    if (!skipQueryParam) {
+      return c.json({ error: "Please provide query param" }, 400);
+    }
+    const skip = parseInt(skipQueryParam);
+    const userID = c.req.param("id");
+    console.log(userID);
+
+    const createdRecipeByUser = await db.recipe.findMany({
+      skip: skip * 10,
+      take: 10,
+      where: { creatorId: userID },
+      select: { food_image_url: true, name: true, type: true },
+    });
+    return c.json({ createdRecipeByUser }, 200);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 export default route;
