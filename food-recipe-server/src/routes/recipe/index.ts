@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import { ProtectRoute } from "../../middleware/protectRoute";
 import { ZodValidator } from "../../helpers/ZodValidator";
-import { createRecipeSchema } from "./schema";
+import { createRecipeSchema, updateRecipeSchema } from "./schema";
 import { UploadFileToCloudinary } from "../../helpers/UploadFileToCloudinary";
 import db from "../../config/db";
-
+import { v2 as cloudinary } from "cloudinary";
 const route = new Hono().basePath("/recipe");
 
 route.post(
@@ -64,4 +64,81 @@ route.get("/get-recipe/:id", ProtectRoute, async (c) => {
   }
 });
 
+route.delete("/delete/:id", ProtectRoute, async (c) => {
+  try {
+    const recipeId = c.req.param("id");
+    const { id: UserId } = c.get("jwtPayload");
+    const recipe = await db.recipe.findUnique({
+      where: { id: recipeId },
+      select: { creatorId: true, food_image_url: true },
+    });
+    if (!recipe) {
+      return c.json({ error: "Wrong recipe id provided" }, 401);
+    }
+    if (recipe.creatorId !== UserId) {
+      return c.json({ error: "You are not authorized of this action" }, 402);
+    }
+    Promise.all([
+      cloudinary.uploader.destroy(
+        recipe.food_image_url.split("/").pop()?.split(".")[0]
+      ),
+      db.ingredient.deleteMany({ where: { recipeId } }),
+    ])
+      .then(async () => {
+        await db.recipe.delete({ where: { id: recipeId } });
+      })
+      .catch((err) => {
+        console.log(err);
+        return c.json({ error: "Failed to delete recipe" }, 500);
+      });
+    return c.json({ message: "Recipe deleted successfully" }, 202);
+  } catch (error) {
+    console.log(error);
+    return c.json({ error: "Internal server error" }, 500);
+  }
+});
+
+route.put(
+  "/update/:id",
+  ProtectRoute,
+  ZodValidator(updateRecipeSchema, "form"),
+  async (c) => {
+    try {
+      const recipeId = c.req.param("id");
+      const { id: UserId } = c.get("jwtPayload");
+      const recipe = await db.recipe.findUnique({
+        where: { id: recipeId },
+        select: { creatorId: true, food_image_url: true },
+      });
+      if (!recipe) {
+        return c.json({ error: "Wrong recipe id provided" }, 401);
+      }
+      if (recipe.creatorId !== UserId) {
+        return c.json({ error: "You are not authorized of this action" }, 402);
+      }
+      const validatedData = c.req.valid("form");
+      const { image } = await c.req.parseBody();
+      let new_food_image_url;
+      if (image && image instanceof File) {
+        if (recipe.food_image_url) {
+          await cloudinary.uploader.destroy(
+            recipe.food_image_url.split("/").pop()?.split(".")[0]!
+          );
+        }
+        new_food_image_url = await UploadFileToCloudinary(image);
+      }
+      const updateRecipe = await db.recipe.update({
+        where: { id: recipeId },
+        data: {
+          food_image_url: new_food_image_url || recipe.food_image_url,
+          ...validatedData,
+        },
+      });
+      return c.json({ updateRecipe }, 202);
+    } catch (error) {
+      console.log(error);
+      return c.json({ error: "Internal server error" }, 500);
+    }
+  }
+);
 export default route;
