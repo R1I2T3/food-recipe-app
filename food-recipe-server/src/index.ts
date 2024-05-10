@@ -5,8 +5,10 @@ import { prettyJSON } from "hono/pretty-json";
 import { v2 as cloudinary } from "cloudinary";
 import AuthRouter from "./routes/auth";
 import { poweredBy } from "hono/powered-by";
-const app = new Hono();
 import UserInfoRouter from "./routes/user/user-info";
+import RecipeRouter from "./routes/recipe";
+
+const app = new Hono();
 
 // middlewares
 app.use(logger());
@@ -25,5 +27,6 @@ cloudinary.config({
 
 app.route("/api/v1", AuthRouter);
 app.route("/api/v1", UserInfoRouter);
+app.route("api/v1", RecipeRouter);
 
 export default app;

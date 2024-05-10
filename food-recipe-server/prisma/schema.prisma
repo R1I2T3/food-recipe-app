@@ -24,7 +24,7 @@ enum FoodType {
   NonVeg
 }
 
-enum FoodCusine {
+enum FoodCuisine {
   Thai
   American
   Chinese
@@ -53,7 +53,7 @@ model Recipe {
   name               String
   instruction        String
   type               FoodType
-  cusine             FoodCusine
+  cuisine            FoodCuisine
   youtube_video_link String?
   food_image_url     String
   Ingredient         Ingredient[]
@@ -68,7 +68,6 @@ model Ingredient {
   id       String @unique @default(uuid())
   name     String
   quantity Int
-  unit     Int
   recipeId String
   Recipe   Recipe @relation(fields: [recipeId], references: [id])
 
