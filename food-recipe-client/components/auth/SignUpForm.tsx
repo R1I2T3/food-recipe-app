@@ -16,11 +16,16 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { SignUpSchema } from "@/lib/zod/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as secureStore from "expo-secure-store";
+import { userCollection } from "@/lib/db";
+import { useState } from "react";
+
 const SignUpForm = () => {
   const router = useRouter();
   const RadioGroupValues = ["Male", "Female", "Other"];
   const default_image = require("../../assets/images/default_image.jpg");
   const [image, pickImage] = useSelectImage();
+  let [image_From_Api, setI] = useState("");
   const {
     handleSubmit,
     control,
@@ -34,8 +39,12 @@ const SignUpForm = () => {
       gender: "Male",
     },
   });
-  const onSubmit = (values: z.infer<typeof SignUpSchema>) => {
+
+  const onSubmit = async (values: z.infer<typeof SignUpSchema>) => {
     console.log(values);
+    console.log(secureStore.getItem("auth_token"));
+    const user = await userCollection.query().fetch();
+    setI(user[0].avatar_url);
   };
   return (
     <ScrollView>
@@ -44,7 +53,7 @@ const SignUpForm = () => {
           <Avatar circular size="$10" margin="auto" marginTop="$4">
             <Avatar.Image
               accessibilityLabel="Cam"
-              src={image || default_image}
+              src={image || image_From_Api || default_image}
             />
             <Avatar.Fallback backgroundColor="$blue10" />
           </Avatar>

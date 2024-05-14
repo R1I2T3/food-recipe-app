@@ -1,9 +1,13 @@
 import { Link } from "expo-router";
-import { Button, Input, Label, YStack, H3 } from "tamagui";
+import { Button, Input, Label, YStack, H3, Spinner, XStack } from "tamagui";
 import { LoginSchema } from "@/lib/zod/auth";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as secureStore from "expo-secure-store";
+import { useLoginMutation } from "@/lib/api/auth";
+import { userCollection, database } from "@/lib/db";
+import * as FileSystem from "expo-file-system";
 export const LoginForm = () => {
   const {
     control,
@@ -16,8 +20,44 @@ export const LoginForm = () => {
       password: "",
     },
   });
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    console.log(values);
+  const { mutateAsync: LoginMutate, isPending } = useLoginMutation();
+  if (isPending) {
+    return (
+      <YStack padding="$3" space="$4" alignItems="center">
+        <XStack alignItems="center">
+          <Spinner size="large" color="$orange10" />
+        </XStack>
+      </YStack>
+    );
+  }
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    const data = await LoginMutate(values);
+    if (data === "error") {
+      return;
+    }
+    if (secureStore.getItem("auth_token")) {
+      await secureStore.deleteItemAsync("auth_token");
+    }
+    await secureStore.setItemAsync("auth_token", data.token);
+    const { uri: avatarImage } = await FileSystem.downloadAsync(
+      data.userDetails.avatar_url,
+      FileSystem.documentDirectory +
+        data.userDetails.avatar_url.split("/").pop()
+    );
+    try {
+      await database.write(async () => {
+        await userCollection.create((newUser) => {
+          newUser.UserId = data.userDetails.id;
+          newUser.username = data.userDetails.username;
+          newUser.fullName = data.userDetails.full_name;
+          newUser.gender = data.userDetails.gender;
+          newUser.createdAt = data.userDetails.createdAt;
+          newUser.avatar_url = avatarImage;
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <YStack>

@@ -12,7 +12,12 @@ import "@tamagui/core/reset.css";
 import { TamaguiProvider } from "tamagui";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import tamaguiConfig from "@/tamagui.config";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
+
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -29,18 +34,23 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <TamaguiProvider config={tamaguiConfig}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="protected/index"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="auth" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ThemeProvider>
-    </TamaguiProvider>
+    <QueryClientProvider client={queryClient}>
+      <TamaguiProvider config={tamaguiConfig}>
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="protected/index"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="auth" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <Toast />
+        </ThemeProvider>
+      </TamaguiProvider>
+    </QueryClientProvider>
   );
 }
