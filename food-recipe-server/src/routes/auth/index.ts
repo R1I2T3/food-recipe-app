@@ -28,7 +28,7 @@ route.post("/signup", ZodValidator(signupSchema, "form"), async (c) => {
     const hashedPassword = await Bun.password.hash(body.password, {
       algorithm: "bcrypt",
     });
-    const newUser = await db.user.create({
+    const userDetails = await db.user.create({
       data: {
         username: body.username,
         password: hashedPassword,
@@ -45,8 +45,8 @@ route.post("/signup", ZodValidator(signupSchema, "form"), async (c) => {
         createdAt: true,
       },
     });
-    const token = await GenerateJwtToken(newUser.id);
-    return c.json({ newUser, message: "User created", token }, 201);
+    const token = await GenerateJwtToken(userDetails.id);
+    return c.json({ userDetails, message: "User created", token }, 201);
   } catch (error: any) {
     console.log(error.message);
     return c.json({ error: "Internal server error" }, 500);

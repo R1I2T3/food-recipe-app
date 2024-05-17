@@ -16,16 +16,15 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { SignUpSchema } from "@/lib/zod/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as secureStore from "expo-secure-store";
-import { userCollection } from "@/lib/db";
-import { useState } from "react";
-
+import { Spinner } from "tamagui";
+import Toast from "react-native-toast-message";
+import { useSignUpMutation } from "@/lib/api/auth";
+import { SaveUser } from "@/utils/saveUser";
 const SignUpForm = () => {
   const router = useRouter();
   const RadioGroupValues = ["Male", "Female", "Other"];
   const default_image = require("../../assets/images/default_image.jpg");
-  const [image, pickImage] = useSelectImage();
-  let [image_From_Api, setI] = useState("");
+  const { file, pickImage } = useSelectImage();
   const {
     handleSubmit,
     control,
@@ -34,17 +33,57 @@ const SignUpForm = () => {
     resolver: zodResolver(SignUpSchema),
     defaultValues: {
       username: "",
-      fullName: "",
+      full_name: "",
       password: "",
       gender: "Male",
     },
   });
 
+  const { mutateAsync: singUpMutate, isPending } = useSignUpMutation();
+  if (isPending) {
+    return (
+      <YStack padding="$3" space="$4" alignItems="center">
+        <XStack alignItems="center">
+          <Spinner size="large" color="$orange10" />
+        </XStack>
+      </YStack>
+    );
+  }
   const onSubmit = async (values: z.infer<typeof SignUpSchema>) => {
-    console.log(values);
-    console.log(secureStore.getItem("auth_token"));
-    const user = await userCollection.query().fetch();
-    setI(user[0].avatar_url);
+    try {
+      const formData = new FormData();
+      const image = {
+        name: file?.fileName?.split(".")[0],
+        uri: file?.uri,
+        type: file?.mimeType,
+        size: file?.fileSize,
+      };
+      formData.append("image", image as any);
+      for (let [key, value] of Object.entries(values)) {
+        if (!(typeof value == "string")) {
+          console.log();
+          return;
+        }
+        formData.append(key, value);
+      }
+      const data = await singUpMutate(formData);
+      console.log(data);
+
+      const message = await SaveUser(data);
+      if (message === "failure") {
+        Toast.show({
+          type: "error",
+          text1: "Failed to save user",
+        });
+      } else {
+        Toast.show({
+          type: "success",
+          text1: data.message,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <ScrollView>
@@ -53,7 +92,7 @@ const SignUpForm = () => {
           <Avatar circular size="$10" margin="auto" marginTop="$4">
             <Avatar.Image
               accessibilityLabel="Cam"
-              src={image || image_From_Api || default_image}
+              src={file?.uri || default_image}
             />
             <Avatar.Fallback backgroundColor="$blue10" />
           </Avatar>
@@ -74,6 +113,7 @@ const SignUpForm = () => {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
+                fontSize={15}
               />
             )}
             name="username"
@@ -100,13 +140,14 @@ const SignUpForm = () => {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
+                fontSize={15}
               />
             )}
-            name="fullName"
+            name="full_name"
           />
-          {errors.fullName && (
+          {errors.full_name && (
             <H3 color={"$red10"} fontSize={13}>
-              {errors.fullName.message}
+              {errors.full_name.message}
             </H3>
           )}
         </YStack>
@@ -126,6 +167,7 @@ const SignUpForm = () => {
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
+                fontSize={15}
               />
             )}
             name="password"

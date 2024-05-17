@@ -8,7 +8,7 @@ const Login = () => {
   return (
     <YStack
       flexGrow={1}
-      backgroundColor={"$orange1"}
+      backgroundColor={"$orange2"}
       alignItems="center"
       justifyContent="center"
     >
@@ -20,7 +20,7 @@ const Login = () => {
           borderWidth={1}
           paddingHorizontal={2}
           paddingVertical={13}
-          backgroundColor={"#ffffff"}
+          backgroundColor={"#ffff"}
         >
           <H2 color={"$orange10"} fontWeight={"bold"} margin={"auto"}>
             Login

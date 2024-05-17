@@ -9,7 +9,7 @@ const signup = () => {
   return (
     <YStack
       flexGrow={1}
-      backgroundColor={"$orange1"}
+      backgroundColor={"$orange2"}
       alignItems="center"
       justifyContent="center"
     >

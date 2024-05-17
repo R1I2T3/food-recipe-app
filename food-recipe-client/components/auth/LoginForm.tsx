@@ -4,10 +4,9 @@ import { LoginSchema } from "@/lib/zod/auth";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as secureStore from "expo-secure-store";
 import { useLoginMutation } from "@/lib/api/auth";
-import { userCollection, database } from "@/lib/db";
-import * as FileSystem from "expo-file-system";
+import { SaveUser } from "@/utils/saveUser";
+import Toast from "react-native-toast-message";
 export const LoginForm = () => {
   const {
     control,
@@ -32,31 +31,17 @@ export const LoginForm = () => {
   }
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     const data = await LoginMutate(values);
-    if (data === "error") {
-      return;
-    }
-    if (secureStore.getItem("auth_token")) {
-      await secureStore.deleteItemAsync("auth_token");
-    }
-    await secureStore.setItemAsync("auth_token", data.token);
-    const { uri: avatarImage } = await FileSystem.downloadAsync(
-      data.userDetails.avatar_url,
-      FileSystem.documentDirectory +
-        data.userDetails.avatar_url.split("/").pop()
-    );
-    try {
-      await database.write(async () => {
-        await userCollection.create((newUser) => {
-          newUser.UserId = data.userDetails.id;
-          newUser.username = data.userDetails.username;
-          newUser.fullName = data.userDetails.full_name;
-          newUser.gender = data.userDetails.gender;
-          newUser.createdAt = data.userDetails.createdAt;
-          newUser.avatar_url = avatarImage;
-        });
+    const message = await SaveUser(data);
+    if (message === "failure") {
+      Toast.show({
+        type: "error",
+        text1: "Failed to save user",
       });
-    } catch (error) {
-      console.log(error);
+    } else {
+      Toast.show({
+        type: "success",
+        text1: data.message,
+      });
     }
   };
   return (
