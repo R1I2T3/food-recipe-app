@@ -19,12 +19,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "tamagui";
 import Toast from "react-native-toast-message";
 import { useSignUpMutation } from "@/lib/api/auth";
-import { SaveUser } from "@/utils/saveUser";
+import { useSaveUser } from "@/utils/saveUser";
 const SignUpForm = () => {
   const router = useRouter();
   const RadioGroupValues = ["Male", "Female", "Other"];
   const default_image = require("../../assets/images/default_image.jpg");
   const { file, pickImage } = useSelectImage();
+  const { SaveUser } = useSaveUser();
   const {
     handleSubmit,
     control,

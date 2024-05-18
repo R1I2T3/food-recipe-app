@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLoginMutation } from "@/lib/api/auth";
-import { SaveUser } from "@/utils/saveUser";
+import { useSaveUser } from "@/utils/saveUser";
 import Toast from "react-native-toast-message";
 export const LoginForm = () => {
   const {
@@ -20,6 +20,7 @@ export const LoginForm = () => {
     },
   });
   const { mutateAsync: LoginMutate, isPending } = useLoginMutation();
+  const { SaveUser } = useSaveUser();
   if (isPending) {
     return (
       <YStack padding="$3" space="$4" alignItems="center">
