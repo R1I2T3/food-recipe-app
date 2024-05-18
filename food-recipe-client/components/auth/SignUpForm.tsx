@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "tamagui";
 import Toast from "react-native-toast-message";
 import { useSignUpMutation } from "@/lib/api/auth";
-import { useSaveUser } from "@/utils/saveUser";
+import { useSaveUser } from "@/hooks/useSaveUser";
 const SignUpForm = () => {
   const router = useRouter();
   const RadioGroupValues = ["Male", "Female", "Other"];
