@@ -1,7 +1,6 @@
-import { SafeAreaView } from "react-native";
-import { XStack, Text, Button } from "tamagui";
+import { TouchableOpacity } from "react-native";
+import { XStack, Text } from "tamagui";
 import React from "react";
-import { StatusBar } from "expo-status-bar";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { database, userCollection } from "@/lib/db";
@@ -25,28 +24,20 @@ const Header = () => {
     }
   };
   return (
-    <SafeAreaView>
-      <StatusBar style="light" />
-      <XStack
-        paddingVertical={20}
-        paddingHorizontal={10}
-        backgroundColor={"$orange9"}
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Text color={"#fff"} fontSize={"$9"} fontStyle="italic">
-          Recipe
-        </Text>
-        <Button
-          variant="outlined"
-          pressStyle={{ borderColor: "$orange2" }}
-          borderColor={"$orange9"}
-          onPress={LogOut}
-        >
-          <MaterialIcons name="logout" size={24} color="#fff" />
-        </Button>
-      </XStack>
-    </SafeAreaView>
+    <XStack
+      paddingVertical={20}
+      paddingHorizontal={10}
+      backgroundColor={"$orange9"}
+      alignItems="center"
+      justifyContent="space-between"
+    >
+      <Text color={"#fff"} fontSize={"$9"} fontStyle="italic">
+        Recipe
+      </Text>
+      <TouchableOpacity onPress={LogOut}>
+        <MaterialIcons name="logout" size={24} color="#fff" />
+      </TouchableOpacity>
+    </XStack>
   );
 };
 

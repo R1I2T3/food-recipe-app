@@ -7,6 +7,7 @@ interface useRecipeStoreTypes {
   setIsAuthenticated: (arg: boolean) => void;
   profile: User | null;
   setProfile: (user: User) => void;
+  fetchProfile: () => Promise<void>;
 }
 export const useRecipeStore = create<useRecipeStoreTypes>((set) => ({
   isAuthenticated: secureStore.getItem("auth_token") !== undefined,
