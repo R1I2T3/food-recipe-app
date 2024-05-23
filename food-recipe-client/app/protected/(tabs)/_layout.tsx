@@ -2,8 +2,13 @@ import { Tabs } from "expo-router";
 import React from "react";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { AntDesign } from "@expo/vector-icons";
-import Header from "@/components/protected/Header";
+import { useRecipeStore } from "@/lib/store";
+import { useEffect } from "react";
 const AppLayout = () => {
+  const { fetchProfile } = useRecipeStore();
+  useEffect(() => {
+    fetchProfile();
+  }, []);
   return (
     <Tabs
       screenOptions={{

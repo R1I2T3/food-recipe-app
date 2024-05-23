@@ -11,14 +11,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import BottomSheetProfile from "@/components/protected/BottomSheetProfile";
 import { Link } from "expo-router";
 const Profile = () => {
-  const { profile, fetchProfile } = useRecipeStore((state) => ({
+  const { profile } = useRecipeStore((state) => ({
     profile: state.profile,
-    fetchProfile: state.fetchProfile,
   }));
   const [sheetOpen, setSheetOpen] = useState(false);
-  useEffect(() => {
-    fetchProfile();
-  }, []);
 
   return (
     <>
