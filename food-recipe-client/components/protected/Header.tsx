@@ -6,6 +6,8 @@ import { useRouter } from "expo-router";
 import { database, userCollection } from "@/lib/db";
 import * as secureStore from "expo-secure-store";
 import { useRecipeStore } from "@/lib/store";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 const Header = () => {
   const setIsAuthenticated = useRecipeStore(
     (state) => state.setIsAuthenticated
@@ -24,20 +26,24 @@ const Header = () => {
     }
   };
   return (
-    <XStack
-      paddingVertical={20}
-      paddingHorizontal={10}
-      backgroundColor={"$orange9"}
-      alignItems="center"
-      justifyContent="space-between"
-    >
-      <Text color={"#fff"} fontSize={"$9"} fontStyle="italic">
-        Recipe
-      </Text>
-      <TouchableOpacity onPress={LogOut}>
-        <MaterialIcons name="logout" size={24} color="#fff" />
-      </TouchableOpacity>
-    </XStack>
+    <SafeAreaView>
+      <StatusBar style="light" backgroundColor="hsl(24, 94.0%, 50.0%)" />
+      <XStack
+        paddingTop={5}
+        paddingBottom={20}
+        paddingHorizontal={10}
+        backgroundColor={"$orange9"}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Text color={"#fff"} fontSize={"$9"} fontStyle="italic">
+          Recipe
+        </Text>
+        <TouchableOpacity onPress={LogOut}>
+          <MaterialIcons name="logout" size={24} color="#fff" />
+        </TouchableOpacity>
+      </XStack>
+    </SafeAreaView>
   );
 };
 

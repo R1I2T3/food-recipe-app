@@ -1,4 +1,4 @@
-import { SafeAreaView, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import Header from "@/components/protected/Header";
 import { Avatar, Text, YStack, XStack, Separator } from "tamagui";
@@ -21,9 +21,9 @@ const Profile = () => {
   }, []);
 
   return (
-    <SafeAreaView>
+    <>
       <Header />
-      <YStack padding={10} flexGrow={1} backgroundColor={"$orange2"}>
+      <YStack padding={10} backgroundColor={"$orange1"} flexGrow={1}>
         <XStack
           justifyContent="space-between"
           alignItems="center"
@@ -87,8 +87,14 @@ const Profile = () => {
           <BottomSheetProfile open={sheetOpen} onOpenChange={setSheetOpen} />
         </XStack>
       </YStack>
-    </SafeAreaView>
+    </>
   );
 };
 
+const styles = StyleSheet.create({
+  ProfileContainer: {
+    flex: 1,
+    backgroundColor: "#0000",
+  },
+});
 export default Profile;

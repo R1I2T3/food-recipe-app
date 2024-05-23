@@ -14,7 +14,6 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import tamaguiConfig from "@/tamagui.config";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
-
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();

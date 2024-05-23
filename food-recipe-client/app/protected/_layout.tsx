@@ -6,7 +6,10 @@ const RootLayout = () => {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="editProfile" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="editProfile"
+        options={{ headerShown: false, presentation: "modal" }}
+      />
     </Stack>
   );
 };
