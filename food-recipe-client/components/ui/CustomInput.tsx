@@ -4,15 +4,15 @@ import { YStack, Label, Input, H3 } from "tamagui";
 import { Controller, useFormContext } from "react-hook-form";
 const CustomInput = (props: { Name: string }) => {
   const form = useFormContext();
-
+  const EditedLabel = props.Name.replaceAll("_", " ");
   return (
     <YStack>
       <Label fontSize={"$6"} fontWeight={"bold"}>
         {(
-          props.Name[0].toUpperCase() +
-          props.Name.slice(1, props.Name.length + 1)
-        ).replace("_", " ")}{" "}
-        *
+          EditedLabel[0].toUpperCase() +
+          EditedLabel.slice(1, props.Name.length + 1)
+        ).replaceAll("_", " ")}{" "}
+        {props.Name === "youtube_video_link" ? "" : "*"}
       </Label>
       <Controller
         control={form.control}

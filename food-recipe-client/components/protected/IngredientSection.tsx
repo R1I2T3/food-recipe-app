@@ -1,6 +1,6 @@
 import { TouchableOpacity, useWindowDimensions } from "react-native";
-import React, { useState } from "react";
-import { Input, XStack, YStack, View, Label } from "tamagui";
+import React from "react";
+import { Input, XStack, YStack, Label } from "tamagui";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 const IngredientSection = () => {
@@ -14,7 +14,7 @@ const IngredientSection = () => {
   return (
     <YStack>
       <Label fontSize={"$6"} fontWeight={"bold"}>
-        Ingredients
+        Ingredients *
       </Label>
       <YStack justifyContent="center">
         {fields.map((field, index) => (

@@ -1,17 +1,28 @@
 import { Text } from "react-native";
 import React from "react";
 import CustomAlertDialog from "../ui/CustomAlertDialog";
-import { Avatar, Input, Label, YStack, H3, Button } from "tamagui";
+import {
+  Avatar,
+  Input,
+  Label,
+  YStack,
+  H3,
+  Button,
+  XStack,
+  Spinner,
+} from "tamagui";
 import { useRecipeStore } from "@/lib/store";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserInfoSchema } from "@/lib/zod/user";
 import { useSelectImage } from "@/hooks/useSelectImage";
 import { z } from "zod";
+import { useUpdateProfileMutation } from "@/lib/api/user";
 const EditProfileForm = () => {
   const default_image = require("../../assets/images/default_image.jpg");
   const { profile } = useRecipeStore();
   const { file, pickImage } = useSelectImage();
+  const { isPending, mutate: UpdateProfileMutate } = useUpdateProfileMutation();
   const {
     handleSubmit,
     control,
@@ -24,10 +35,34 @@ const EditProfileForm = () => {
     },
   });
   const onSubmit = handleSubmit(
-    (values: z.infer<typeof updateUserInfoSchema>) => {
-      console.log(values);
+    async (values: z.infer<typeof updateUserInfoSchema>) => {
+      const formData = new FormData();
+      if (values.full_name !== profile?.fullName) {
+        formData.append("full_name", values.full_name!);
+      }
+      if (values.password && values.password.length > 6) {
+        formData.append("password", values.password);
+      }
+      if (file) {
+        formData.append("image", {
+          name: file?.fileName?.split(".")[0],
+          uri: file?.uri,
+          type: file?.mimeType,
+          size: file?.fileSize,
+        } as any);
+      }
+      try {
+        await UpdateProfileMutate(formData);
+      } catch (error) {
+        console.log(error);
+      }
     }
   );
+  if (isPending) {
+    <YStack flexGrow={1} justifyContent="center" alignItems="center">
+      <Spinner size="large" color={"$orange9"} />
+    </YStack>;
+  }
   return (
     <YStack backgroundColor={"$orange1"}>
       <YStack justifyContent="center" alignItems="center" marginVertical={10}>

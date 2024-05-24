@@ -74,15 +74,18 @@ route.put(
         },
         select: {
           password: false,
-          username: true,
           full_name: true,
-          avatar_url: true,
-          gender: true,
-          createdAt: true,
         },
       });
+      const updateInfo = { full_name: "", avatar_url: "" };
+      if (updatedUser.full_name !== Old_fullName) {
+        updateInfo.full_name = updatedUser.full_name;
+      }
+      if (new_image_url) {
+        updateInfo.avatar_url = new_image_url;
+      }
       return c.json(
-        { message: "Account updated successfully", updatedUser },
+        { message: "Account updated successfully", updateInfo },
         202
       );
     } catch (error) {
