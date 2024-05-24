@@ -1,5 +1,6 @@
 import { Model } from "@nozbe/watermelondb";
-import { field, text, date } from "@nozbe/watermelondb/decorators";
+import { text } from "@nozbe/watermelondb/decorators";
+import { Associations } from "@nozbe/watermelondb/Model";
 export default class User extends Model {
   static table = "user";
   @text("user_db_id")

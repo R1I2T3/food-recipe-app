@@ -26,6 +26,10 @@ import IngredientSection from "@/components/protected/IngredientSection";
 import { FormProvider } from "react-hook-form";
 import CustomInput from "@/components/ui/CustomInput";
 import RecipeInstructionTextField from "@/components/protected/RecipeInstructionTextField";
+import Toast from "react-native-toast-message";
+import { database, ingredientsCollection, recipeCollection } from "@/lib/db";
+import Recipe from "@/lib/db/model/recipe";
+import { useRecipeStore } from "@/lib/store";
 const createRecipe = () => {
   const [isPending, setIsPending] = useState(true);
   const { file, pickImage } = useSelectImage();
@@ -40,9 +44,38 @@ const createRecipe = () => {
       Ingredient: [{ name: "", quantity: "" }],
     },
   });
+  const { profile } = useRecipeStore();
   const tabBarHeight = useBottomTabBarHeight();
-  const onSubmit = (values: z.infer<typeof createRecipeSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof createRecipeSchema>) => {
+    // const formData = new FormData();
+    if (!file) {
+      Toast.show({ type: "error", text1: "Please select a recipe image" });
+    }
+    // formData.append("image", {
+    //   name: file?.fileName?.split(".")[0],
+    //   uri: file?.uri,
+    //   type: file?.mimeType,
+    //   size: file?.fileSize,
+    // } as any);
+    // for(let key,value in values.)
+    await database.write(async () => {
+      const NewRecipe = await recipeCollection.create((recipe) => {
+        (recipe.RecipeId = "12"), (recipe.name = values.name);
+        recipe.type = values.type;
+        recipe.cuisine = values.cuisine;
+        recipe.youtube_video_link = values.youtube_video_link || "";
+        recipe.food_image_url = file?.uri as string;
+        recipe.creator.set(profile);
+      });
+      values.Ingredient.forEach(async (value) => {
+        await ingredientsCollection.create((ingredient) => {
+          ingredient.IngredientName = value.name;
+          ingredient.recipe.set(NewRecipe);
+          ingredient.quantity = parseInt(value.quantity);
+          ingredient.ingredientId = "random";
+        });
+      });
+    });
   };
   return (
     <>

@@ -2,6 +2,7 @@ import { Button, YStack } from "tamagui";
 import React, { useRef, useState, useEffect } from "react";
 import Header from "@/components/protected/Header";
 import { FlatList } from "react-native";
+import { ingredientsCollection, recipeCollection } from "@/lib/db";
 
 const Home = () => {
   const Filters = [
@@ -26,6 +27,11 @@ const Home = () => {
       setFilter(FilterValue);
     }
   };
+  const fetchRecipe = async () => {
+    const ingredient = (await ingredientsCollection.query().fetch())[0];
+    console.log(await ingredient.recipe);
+  };
+  fetchRecipe();
   return (
     <>
       <Header />
