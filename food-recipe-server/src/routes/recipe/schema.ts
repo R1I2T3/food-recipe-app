@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const IngredientSchema = z.object({
   name: z.string(),
-  quantity: z.coerce.number(),
+  quantity: z.string(),
 });
 
 export const createRecipeSchema = z.object({

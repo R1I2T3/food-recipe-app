@@ -67,7 +67,7 @@ model Recipe {
 model Ingredient {
   id       String @unique @default(uuid())
   name     String
-  quantity Int
+  quantity String
   recipeId String
   Recipe   Recipe @relation(fields: [recipeId], references: [id])
 

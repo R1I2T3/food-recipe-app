@@ -11,7 +11,7 @@ export default class Ingredients extends Model {
   IngredientName!: string;
 
   @field("quantity")
-  quantity!: number;
+  quantity!: string;
 
   @relation("recipes", "recipeId")
   recipe!: any;

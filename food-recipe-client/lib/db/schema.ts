@@ -32,7 +32,7 @@ const mySchema = appSchema({
       columns: [
         { name: "ingredient_db_id", type: "string" },
         { name: "name", type: "string" },
-        { name: "quantity", type: "number" },
+        { name: "quantity", type: "string" },
         { name: "recipeId", type: "string" },
       ],
     }),
