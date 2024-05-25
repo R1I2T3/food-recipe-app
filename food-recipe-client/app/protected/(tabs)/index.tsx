@@ -27,11 +27,11 @@ const Home = () => {
       setFilter(FilterValue);
     }
   };
-  const fetchRecipe = async () => {
-    const ingredient = (await ingredientsCollection.query().fetch())[0];
-    console.log(await ingredient.recipe);
-  };
-  fetchRecipe();
+  // const fetchRecipe = async () => {
+  //   const ingredient = (await ingredientsCollection.query().fetch())[0];
+  //   console.log(await ingredient.recipe);
+  // };
+  // fetchRecipe();
   return (
     <>
       <Header />

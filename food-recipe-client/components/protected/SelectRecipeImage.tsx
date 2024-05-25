@@ -1,11 +1,12 @@
 import { useWindowDimensions } from "react-native";
 import { Image, Button } from "tamagui";
-import { useSelectImage } from "@/hooks/useSelectImage";
 const SelectRecipeImage = ({
   file,
+  resetForm,
   pickImage,
 }: {
   file: any;
+  resetForm: boolean;
   pickImage: () => any;
 }) => {
   const width = useWindowDimensions().width;
@@ -19,7 +20,7 @@ const SelectRecipeImage = ({
       onPress={pickImage}
       borderColor={"$orange9"}
     >
-      {!file ? (
+      {resetForm || !file ? (
         "Select  a recipe image"
       ) : (
         <Image src={file.uri} width={width * 0.94} height={width * 0.7} />

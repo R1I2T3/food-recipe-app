@@ -6,7 +6,7 @@ export const ProtectRoute = async (c: Context, next: Next) => {
   try {
     const { bearer } = c.req.header();
     if (!bearer) {
-      return c.json({ error: "Unauthorized access" });
+      return c.json({ error: "Not Authorized" });
     }
     let decoded;
     try {
