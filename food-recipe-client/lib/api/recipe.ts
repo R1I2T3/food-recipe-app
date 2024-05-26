@@ -3,8 +3,13 @@ import Toast from "react-native-toast-message";
 import { useRecipeStore } from "../store";
 import * as secureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
-import { database, recipeCollection, ingredientsCollection } from "../db";
 import * as FileSystem from "expo-file-system";
+import { db } from "../db";
+import {
+  ingredientsInsertType,
+  ingredientTable,
+  recipeTable,
+} from "../db/schema";
 
 export const useCreateRecipeMutation = () => {
   const { profile } = useRecipeStore();
@@ -55,22 +60,26 @@ export const useCreateRecipeMutation = () => {
           FileSystem.documentDirectory +
             newRecipe.food_image_url.split("/").pop()
         );
-        await database.write(async () => {
-          const NewRecipe = await recipeCollection.create((recipe) => {
-            (recipe.RecipeId = "12"), (recipe.name = newRecipe.name);
-            recipe.type = newRecipe.type;
-            recipe.cuisine = newRecipe.cuisine;
-            recipe.youtube_video_link = newRecipe.youtube_video_link || "";
-            recipe.food_image_url = FoodImageUri;
-            recipe.creator.set(profile);
-          });
-          newRecipe.Ingredient.forEach(async (value: any) => {
-            await ingredientsCollection.create((ingredient) => {
-              ingredient.IngredientName = value.name;
-              ingredient.recipe.set(NewRecipe);
-              ingredient.quantity = value.quantity;
-              ingredient.ingredientId = value.id;
-            });
+        const recipe = (
+          await db
+            .insert(recipeTable)
+            .values({
+              id: newRecipe.id,
+              name: newRecipe.name,
+              type: newRecipe.type,
+              cuisine: newRecipe.cuisine,
+              food_image_url: newRecipe.food_image_url,
+              creatorId: profile?.id!,
+              instruction: newRecipe.instruction,
+            })
+            .returning({ id: recipeTable.id })
+        )[0];
+        newRecipe.Ingredient.forEach(async (value: ingredientsInsertType) => {
+          await db.insert(ingredientTable).values({
+            id: value.id,
+            name: value.name,
+            quantity: value.quantity,
+            recipeId: recipe.id,
           });
         });
         Toast.show({ type: "success", text1: "Recipe added successfully" });

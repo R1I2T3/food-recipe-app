@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import * as secureStore from "expo-secure-store";
-import User from "../db/model/user";
-import { userCollection } from "../db";
+import { userInsertType, userSelectType, userTable } from "../db/schema";
+import { db } from "../db";
 interface useRecipeStoreTypes {
   isAuthenticated: boolean;
   setIsAuthenticated: (arg: boolean) => void;
-  profile: User | null;
-  setProfile: (user: User) => void;
+  profile: userSelectType | null;
+  setProfile: (user: userInsertType) => void;
   fetchProfile: () => Promise<void>;
 }
 export const useRecipeStore = create<useRecipeStoreTypes>((set) => ({
@@ -15,11 +15,11 @@ export const useRecipeStore = create<useRecipeStoreTypes>((set) => ({
   profile: null,
   fetchProfile: async () => {
     try {
-      const userProfileData = (await userCollection.query().fetch())[0];
-      set({ profile: userProfileData });
+      const userProfileData = await db.select().from(userTable);
+      set({ profile: userProfileData[0] });
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
   },
-  setProfile: (user: User) => set({ profile: user }),
+  setProfile: (user: userInsertType) => set({ profile: user }),
 }));

@@ -1,8 +1,10 @@
-import { userCollection, database } from "@/lib/db";
 import { useRecipeStore } from "@/lib/store";
 import * as FileSystem from "expo-file-system";
 import * as secureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
+import { db } from "@/lib/db";
+import { userTable } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 export const useSaveUser = () => {
   const { setProfile, setIsAuthenticated } = useRecipeStore();
   const router = useRouter();
@@ -20,18 +22,20 @@ export const useSaveUser = () => {
         FileSystem.documentDirectory +
           values.userDetails.avatar_url.split("/").pop()
       );
-      let user;
-      await database.write(async () => {
-        user = await userCollection.create((newUser) => {
-          newUser.UserId = values.userDetails.id;
-          newUser.username = values.userDetails.username;
-          newUser.fullName = values.userDetails.full_name;
-          newUser.gender = values.userDetails.gender;
-          newUser.createdAt = values.userDetails.createdAt;
-          newUser.avatar_url = avatarImage;
-        });
-        setProfile(user);
+      const { userDetails } = values;
+      await db.insert(userTable).values({
+        id: userDetails.id,
+        username: userDetails.username,
+        full_name: userDetails.full_name,
+        gender: userDetails.gender,
+        createdAt: userDetails.createdAt,
+        avatar_url: avatarImage,
       });
+      const createdUser = await db
+        .select()
+        .from(userTable)
+        .where(eq(userTable.id, userDetails.id));
+      setProfile(createdUser[0]);
       setIsAuthenticated(true);
       router.replace("/protected/");
       return "success";

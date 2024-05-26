@@ -3,11 +3,17 @@ import { XStack, Text } from "tamagui";
 import React from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { database, userCollection } from "@/lib/db";
 import * as secureStore from "expo-secure-store";
 import { useRecipeStore } from "@/lib/store";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { db } from "@/lib/db";
+import {
+  ingredientTable,
+  LikedRecipeTable,
+  recipeTable,
+  userTable,
+} from "@/lib/db/schema";
 const Header = () => {
   const setIsAuthenticated = useRecipeStore(
     (state) => state.setIsAuthenticated
@@ -16,9 +22,10 @@ const Header = () => {
   const LogOut = async () => {
     try {
       await secureStore.deleteItemAsync("auth_token");
-      await database.write(async () => {
-        (await userCollection.query().fetch())[0].destroyPermanently();
-      });
+      await db.delete(LikedRecipeTable);
+      await db.delete(ingredientTable);
+      await db.delete(recipeTable);
+      await db.delete(userTable);
       setIsAuthenticated(false);
       router.replace("/auth/");
     } catch (error) {

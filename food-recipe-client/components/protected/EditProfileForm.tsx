@@ -30,14 +30,14 @@ const EditProfileForm = () => {
   } = useForm<z.infer<typeof updateUserInfoSchema>>({
     resolver: zodResolver(updateUserInfoSchema),
     defaultValues: {
-      full_name: profile?.fullName,
+      full_name: profile?.full_name,
       password: "",
     },
   });
   const onSubmit = handleSubmit(
     async (values: z.infer<typeof updateUserInfoSchema>) => {
       const formData = new FormData();
-      if (values.full_name !== profile?.fullName) {
+      if (values.full_name !== profile?.full_name) {
         formData.append("full_name", values.full_name!);
       }
       if (values.password && values.password.length > 6) {

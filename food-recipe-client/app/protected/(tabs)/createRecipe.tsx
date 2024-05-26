@@ -34,7 +34,7 @@ const createRecipe = () => {
       name: "",
       instruction: "",
       type: "Veg",
-      cuisine: "Indian",
+      cuisine: "Thai",
       youtube_video_link: "",
       Ingredient: [{ name: "", quantity: "" }],
     },

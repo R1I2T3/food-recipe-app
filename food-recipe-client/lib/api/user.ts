@@ -1,10 +1,13 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { useRecipeStore } from "../store";
 import * as secureStore from "expo-secure-store";
-import { database, userCollection } from "../db";
 import * as FileSystem from "expo-file-system";
 import { useRouter } from "expo-router";
+import { db } from "../db";
+import { recipeTable, userTable } from "../db/schema";
+import { eq } from "drizzle-orm";
+
 export const useUpdateProfileMutation = () => {
   const { profile, fetchProfile } = useRecipeStore();
   const router = useRouter();
@@ -12,7 +15,7 @@ export const useUpdateProfileMutation = () => {
     mutationFn: async (data: FormData) => {
       const token = await secureStore.getItemAsync("auth_token");
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_SERVER_URL}/user-info/update/${profile?.UserId}`,
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/user-info/update/${profile?.id}`,
         {
           method: "PUT",
           headers: {
@@ -51,16 +54,9 @@ export const useUpdateProfileMutation = () => {
           );
           avatarImage = uri;
         }
-        await database.write(async () => {
-          const currentUser = (await userCollection.query().fetch())[0];
-          await currentUser.update((user) => {
-            if (data.updateInfo.full_name) {
-              user.fullName = data.updateInfo.full_name;
-            }
-            if (avatarImage) {
-              user.avatar_url = avatarImage;
-            }
-          });
+        await db.update(userTable).set({
+          full_name: data.updateInfo.full_name || profile?.full_name,
+          avatar_url: avatarImage || profile?.avatar_url,
         });
       }
       Toast.show({
@@ -73,4 +69,20 @@ export const useUpdateProfileMutation = () => {
     },
   });
   return mutation;
+};
+
+export const useGetUserRecipeQuery = () => {
+  const { profile } = useRecipeStore();
+  const query = useQuery({
+    queryKey: ["MyRecipe", profile?.id],
+    queryFn: async () => {
+      const recipes = await db
+        .select()
+        .from(recipeTable)
+        .where(eq(recipeTable.creatorId, profile?.id!));
+      return recipes;
+    },
+    staleTime: 5,
+  });
+  return query;
 };

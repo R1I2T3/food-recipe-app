@@ -2,7 +2,7 @@ import { Button, YStack } from "tamagui";
 import React, { useRef, useState, useEffect } from "react";
 import Header from "@/components/protected/Header";
 import { FlatList } from "react-native";
-import { ingredientsCollection, recipeCollection } from "@/lib/db";
+// import { ingredientsCollection, recipeCollection } from "@/lib/db";
 
 const Home = () => {
   const Filters = [

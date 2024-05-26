@@ -4,11 +4,10 @@ import Header from "@/components/protected/Header";
 import { Avatar, Text, YStack, XStack, Separator } from "tamagui";
 import Feather from "@expo/vector-icons/Feather";
 import { useRecipeStore } from "@/lib/store";
-import { useEffect } from "react";
 import ProfileRow from "@/components/protected/ProfileRow";
 import { getRelativeTime } from "@/utils";
 import { MaterialIcons } from "@expo/vector-icons";
-import BottomSheetProfile from "@/components/protected/BottomSheetProfile";
+import MyRecipeBottomSheetProfile from "@/components/protected/MyRecipeBottomSheetProfile";
 import { Link } from "expo-router";
 const Profile = () => {
   const { profile, fetchProfile } = useRecipeStore((state) => ({
@@ -37,7 +36,7 @@ const Profile = () => {
           </Avatar>
         </XStack>
         <ProfileRow name="Username" value={profile?.username} />
-        <ProfileRow name="Full Name" value={profile?.fullName} />
+        <ProfileRow name="Full Name" value={profile?.full_name} />
         <ProfileRow name="Gender" value={profile?.gender} />
         <ProfileRow
           name="Date of join"
@@ -57,7 +56,10 @@ const Profile = () => {
               size={30}
               color="hsl(24, 100%, 46.5%)"
             />
-            <BottomSheetProfile open={sheetOpen} onOpenChange={setSheetOpen} />
+            <MyRecipeBottomSheetProfile
+              open={sheetOpen}
+              onOpenChange={setSheetOpen}
+            />
           </TouchableOpacity>
         </XStack>
         <Separator
@@ -80,7 +82,7 @@ const Profile = () => {
               color="hsl(24, 100%, 46.5%)"
             />
           </TouchableOpacity>
-          <BottomSheetProfile open={sheetOpen} onOpenChange={setSheetOpen} />
+          {/* <BottomSheetProfile open={sheetOpen} onOpenChange={setSheetOpen} /> */}
         </XStack>
       </YStack>
     </>
