@@ -99,7 +99,7 @@ route.get("/created-recipe/:id", ProtectRoute, async (c) => {
     const userID = c.req.param("id");
     const createdRecipeByUser = await db.recipe.findMany({
       where: { creatorId: userID },
-      select: { food_image_url: true, name: true, type: true },
+      include: { Ingredient: true },
     });
     return c.json({ createdRecipeByUser }, 200);
   } catch (error) {

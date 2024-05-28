@@ -6,8 +6,9 @@ import * as FileSystem from "expo-file-system";
 import { useRouter } from "expo-router";
 import { db } from "../db";
 import { recipeTable, userTable } from "../db/schema";
-import { eq } from "drizzle-orm";
-
+import { count, eq } from "drizzle-orm";
+import { recipeInsertType } from "../db/schema";
+import { SaveRecipe } from "@/utils/saveRecipe";
 export const useUpdateProfileMutation = () => {
   const { profile, fetchProfile } = useRecipeStore();
   const router = useRouter();
@@ -25,6 +26,7 @@ export const useUpdateProfileMutation = () => {
         }
       );
       const ResponseData = await response.json();
+
       return ResponseData;
     },
     onError: (error) => {
@@ -71,18 +73,40 @@ export const useUpdateProfileMutation = () => {
   return mutation;
 };
 
-export const useGetUserRecipeQuery = () => {
-  const { profile } = useRecipeStore();
+export const useGetUserRecipeQuery = (id: string, recipe_length: number) => {
   const query = useQuery({
-    queryKey: ["MyRecipe", profile?.id],
+    queryKey: ["MyRecipe", id, recipe_length],
     queryFn: async () => {
-      const recipes = await db
+      let recipes = await db
         .select()
         .from(recipeTable)
-        .where(eq(recipeTable.creatorId, profile?.id!));
+        .where(eq(recipeTable.creatorId, id!));
+      const auth_token = await secureStore.getItemAsync("auth_token");
+      let fetchedRecipes;
+      if (recipes.length === 0) {
+        const response = await fetch(
+          `${process.env.EXPO_PUBLIC_SERVER_URL}/user-info/created-recipe/${id}`,
+          {
+            headers: {
+              Bearer: auth_token!,
+            },
+          }
+        );
+        fetchedRecipes = await response.json();
+        try {
+          fetchedRecipes.createdRecipeByUser.forEach(
+            async (recipe: recipeInsertType) => {
+              await SaveRecipe(recipe, id);
+            }
+          );
+        } catch (error) {
+          console.log(error);
+        }
+        return fetchedRecipes.createdRecipeByUser;
+      }
       return recipes;
     },
-    staleTime: 5,
+    staleTime: 6,
   });
   return query;
 };

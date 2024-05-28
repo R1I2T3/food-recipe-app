@@ -37,5 +37,4 @@ export const updateRecipeSchema = z.object({
       "Spanish",
     ])
     .optional(),
-  youtube_video_link: z.string().url().optional(),
 });

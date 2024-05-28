@@ -18,6 +18,5 @@ export const createRecipeSchema = z.object({
     "Nepali",
     "Spanish",
   ]),
-  youtube_video_link: z.string().optional(),
   Ingredient: z.array(IngredientSchema),
 });

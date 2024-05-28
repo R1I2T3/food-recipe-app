@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import Header from "@/components/protected/Header";
 import { Avatar, Text, YStack, XStack, Separator } from "tamagui";
@@ -89,10 +89,4 @@ const Profile = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  ProfileContainer: {
-    flex: 1,
-    backgroundColor: "#0000",
-  },
-});
 export default Profile;

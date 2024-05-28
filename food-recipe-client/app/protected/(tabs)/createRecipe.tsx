@@ -35,7 +35,6 @@ const createRecipe = () => {
       instruction: "",
       type: "Veg",
       cuisine: "Thai",
-      youtube_video_link: "",
       Ingredient: [{ name: "", quantity: "" }],
     },
   });
@@ -61,6 +60,7 @@ const createRecipe = () => {
         formData.append(key, value);
       }
     }
+
     try {
       await CreateRecipeMutate(formData);
       setResetForm(true);
@@ -91,7 +91,6 @@ const createRecipe = () => {
           <RecipeTypeRadioGroup />
           <CuisineSelect />
           <IngredientSection />
-          <CustomInput Name="youtube_video_link" />
         </FormProvider>
 
         <YStack justifyContent="center">

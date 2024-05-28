@@ -49,17 +49,16 @@ model User {
 }
 
 model Recipe {
-  id                 String        @unique @default(uuid())
-  name               String
-  instruction        String
-  type               FoodType
-  cuisine            FoodCuisine
-  youtube_video_link String?
-  food_image_url     String
-  Ingredient         Ingredient[]
-  creatorId          String
-  creator            User          @relation(fields: [creatorId], references: [id])
-  LikedRecipe        LikedRecipe[]
+  id             String        @unique @default(uuid())
+  name           String
+  instruction    String
+  type           FoodType
+  cuisine        FoodCuisine
+  food_image_url String
+  Ingredient     Ingredient[]
+  creatorId      String
+  creator        User          @relation(fields: [creatorId], references: [id])
+  LikedRecipe    LikedRecipe[]
 
   @@map("recipe")
 }

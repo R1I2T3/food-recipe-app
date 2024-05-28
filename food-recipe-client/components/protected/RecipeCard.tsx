@@ -4,13 +4,22 @@ import {
   useWindowDimensions,
 } from "react-native";
 import React from "react";
-import Recipe from "@/lib/db/model/recipe";
 import { Card, Image, XStack, YStack, Text } from "tamagui";
-const RecipeCard = ({ data }: { data: Recipe }) => {
+import { recipeSelectType } from "@/lib/db/schema";
+import { useRouter } from "expo-router";
+const RecipeCard = ({
+  data,
+  setSheetState,
+}: {
+  data: recipeSelectType;
+  setSheetState?: any;
+}) => {
   const width = useWindowDimensions().width;
   const imageUrl = data.food_image_url;
+  const router = useRouter();
   const onPressRecipeCard = () => {
-    console.log("recipeCard is pressed");
+    router.push(`/protected/recipe/${data.id}`);
+    return setSheetState(false);
   };
   return (
     <TouchableNativeFeedback onPress={onPressRecipeCard}>

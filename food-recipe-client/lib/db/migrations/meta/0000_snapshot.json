@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "10e52507-bdaf-474b-b932-40df7066fff8",
+  "id": "bc0eb3e1-0ecb-49ff-8eeb-26451d018489",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "liked_recipe": {

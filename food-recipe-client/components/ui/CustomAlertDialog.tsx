@@ -7,21 +7,14 @@ interface CustomAlertDialogPropsTypes {
   AlertDialogDescription: string;
   AlertDialogActionTitle: string;
   AlertDialogAction: ({ ...remainingArgs }) => null;
+  children: React.ReactNode;
 }
 const CustomAlertDialog = (props: CustomAlertDialogPropsTypes) => {
   const windowWidth = Dimensions.get("window").width;
+
   return (
     <AlertDialog>
-      <AlertDialog.Trigger asChild>
-        <Button
-          backgroundColor={"$orange9"}
-          pressStyle={{ backgroundColor: "$orange10" }}
-          color={"white"}
-          fontSize={"$6"}
-        >
-          {props.AlertButtonTriggerLabel}
-        </Button>
-      </AlertDialog.Trigger>
+      <AlertDialog.Trigger asChild>{props.children}</AlertDialog.Trigger>
       <AlertDialog.Portal>
         <AlertDialog.Overlay
           key="overlay"

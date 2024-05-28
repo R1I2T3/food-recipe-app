@@ -1,15 +1,31 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Sheet, Spinner, XStack, YStack } from "tamagui";
 import type { SheetProps } from "tamagui";
 import { useGetUserRecipeQuery } from "@/lib/api/user";
-import { MaterialIcons } from "@expo/vector-icons";
 import { FlatList } from "react-native";
-import Recipe from "@/lib/db/model/recipe";
 import RecipeCard from "./RecipeCard";
+import { db } from "@/lib/db";
+import { recipeTable } from "@/lib/db/schema";
+import { count, eq } from "drizzle-orm";
+import { useRecipeStore } from "@/lib/store";
 const MyRecipeBottomSheetProfile = (props: SheetProps) => {
-  const { data, isPending, isError } = useGetUserRecipeQuery();
+  const { profile } = useRecipeStore();
+  const [recipeLength, setRecipeLength] = useState(2);
+  let recipe_length;
+  const getRecipeLength = async () => {
+    const fetchedData = await db
+      .select({ count: count() })
+      .from(recipeTable)
+      .where(eq(recipeTable.creatorId, profile.id!));
+    setRecipeLength(fetchedData[0].count);
+  };
+  getRecipeLength();
+  const { data, isPending, isError } = useGetUserRecipeQuery(
+    profile?.id,
+    recipeLength
+  );
   if (isPending) {
     return (
       <YStack justifyContent="center" alignItems="center">
@@ -65,7 +81,13 @@ const MyRecipeBottomSheetProfile = (props: SheetProps) => {
         <FlatList
           data={data}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <RecipeCard data={item} key={item.id} />}
+          renderItem={({ item }) => (
+            <RecipeCard
+              data={item}
+              key={item.id}
+              setSheetState={props.onOpenChange}
+            />
+          )}
           showsVerticalScrollIndicator={false}
         />
       </Sheet.Frame>
