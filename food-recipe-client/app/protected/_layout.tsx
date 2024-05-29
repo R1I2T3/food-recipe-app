@@ -42,6 +42,31 @@ const RootLayout = () => {
           },
         }}
       />
+      <Stack.Screen
+        name="updaterecipe"
+        options={{
+          animation: "fade",
+          title: "Update Recipe",
+          headerStyle: { backgroundColor: "hsl(24, 94.0%, 50.0%)" },
+          headerTintColor: "white",
+          headerTitleAlign: "center",
+          headerTitleStyle: { fontSize: 25 },
+          headerBackButtonMenuEnabled: true,
+          headerBlurEffect: "systemChromeMaterial",
+          headerLeft: () => {
+            return (
+              <Button
+                onPress={() => router.dismiss(1)}
+                circular
+                backgroundColor={"$orange8"}
+                pressStyle={{ backgroundColor: "$orange7" }}
+              >
+                <AntDesign name="back" size={25} color="white" />
+              </Button>
+            );
+          },
+        }}
+      />
     </Stack>
   );
 };

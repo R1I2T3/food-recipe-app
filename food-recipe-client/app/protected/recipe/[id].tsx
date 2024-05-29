@@ -14,10 +14,13 @@ import { useLocalSearchParams } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import RecipeActionRow from "@/components/protected/RecipeActionRow";
+import { useRecipeStore } from "@/lib/store";
 const RecipeScreen = () => {
   const { id } = useLocalSearchParams();
   const width = useWindowDimensions().width;
   const { data, isPending, isError } = useGetRecipeQuery(id as string);
+  console.log("recipe");
+
   if (isPending) {
     return (
       <YStack

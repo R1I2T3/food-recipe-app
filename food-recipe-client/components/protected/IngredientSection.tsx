@@ -3,7 +3,10 @@ import React from "react";
 import { Input, XStack, YStack, Label } from "tamagui";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
-const IngredientSection = () => {
+const IngredientSection = ({
+  showAddIngredientButton = true,
+  showRemoveIngredientButton = true,
+}) => {
   const ScreenWidth = useWindowDimensions().width;
   const form = useFormContext();
   const { fields, append, remove } = useFieldArray({
@@ -57,7 +60,7 @@ const IngredientSection = () => {
               )}
             />
             <XStack flexGrow={1} justifyContent="flex-end">
-              {index === 0 ? null : (
+              {index === 0 || !showRemoveIngredientButton ? null : (
                 <TouchableOpacity onPress={() => remove(index)}>
                   <MaterialIcons
                     name="highlight-remove"
@@ -66,16 +69,17 @@ const IngredientSection = () => {
                   />
                 </TouchableOpacity>
               )}
-
-              <TouchableOpacity
-                onPress={() => append({ name: "", quantity: "" })}
-              >
-                <Ionicons
-                  name="add-circle"
-                  size={30}
-                  color="hsl(24, 100%, 46.5%)"
-                />
-              </TouchableOpacity>
+              {showAddIngredientButton ? (
+                <TouchableOpacity
+                  onPress={() => append({ name: "", quantity: "" })}
+                >
+                  <Ionicons
+                    name="add-circle"
+                    size={30}
+                    color="hsl(24, 100%, 46.5%)"
+                  />
+                </TouchableOpacity>
+              ) : null}
             </XStack>
           </XStack>
         ))}

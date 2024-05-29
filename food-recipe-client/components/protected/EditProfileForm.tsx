@@ -137,7 +137,11 @@ const EditProfileForm = () => {
         AlertDialogTitle="Edit Profile"
         AlertDialogDescription="Are you sure about edit your profile"
         AlertDialogAction={onSubmit}
-      />
+      >
+        <Button backgroundColor="$orange9" color="white">
+          Update profile
+        </Button>
+      </CustomAlertDialog>
     </YStack>
   );
 };

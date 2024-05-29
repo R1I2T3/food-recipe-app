@@ -20,3 +20,19 @@ export const createRecipeSchema = z.object({
   ]),
   Ingredient: z.array(IngredientSchema),
 });
+
+export const updateRecipeSchema = z.object({
+  name: z.string().optional(),
+  instruction: z.string().optional(),
+  type: z.enum(["Veg", "NonVeg"]).optional(),
+  cuisine: z.enum([
+    "Thai",
+    "American",
+    "Chinese",
+    "Mexican",
+    "Indian",
+    "Nepali",
+    "Spanish",
+  ]),
+  Ingredient: z.array(IngredientSchema).optional(),
+});

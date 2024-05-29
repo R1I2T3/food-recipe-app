@@ -1,4 +1,4 @@
-import { RadioGroup, XStack, Label, ScrollView, YStack, H3 } from "tamagui";
+import { RadioGroup, XStack, Label, YStack, H3 } from "tamagui";
 import React from "react";
 import { FlatList } from "react-native";
 import { useFormContext, Controller } from "react-hook-form";
@@ -25,7 +25,7 @@ const CuisineSelect = () => {
         render={({ field: { onChange, value } }) => (
           <RadioGroup
             aria-labelledby="Select one item"
-            defaultValue={"Thai"}
+            defaultValue={value}
             onValueChange={onChange}
           >
             {

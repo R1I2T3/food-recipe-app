@@ -16,7 +16,7 @@ const RecipeTypeRadioGroup = () => {
           render={({ field: { onChange, value } }) => (
             <RadioGroup
               aria-labelledby="Select one item"
-              defaultValue="Veg"
+              defaultValue={value}
               onValueChange={onChange}
             >
               <XStack justifyContent="space-between" flex={1} space="$10">

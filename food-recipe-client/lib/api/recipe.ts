@@ -62,6 +62,7 @@ export const useCreateRecipeMutation = () => {
 };
 
 export const useGetRecipeQuery = (id: string) => {
+  const { setRecipe } = useRecipeStore();
   const query = useQuery({
     queryKey: ["recipe", id],
     queryFn: async () => {
@@ -74,7 +75,7 @@ export const useGetRecipeQuery = (id: string) => {
         .from(ingredientTable)
         .where(eq(ingredientTable.recipeId, id));
       const data = { ...recipe[0], ingredients };
-
+      setRecipe(data);
       return data;
     },
   });
