@@ -3,6 +3,7 @@ import { ProtectRoute } from "../../middleware/protectRoute";
 import { ZodValidator } from "../../helpers/ZodValidator";
 import { addIngredientSchema, deleteIngredientSchema } from "./schema";
 import db from "../../config/db";
+import { Ingredient } from "@prisma/client";
 const route = new Hono().basePath("/ingredient");
 
 route.post(
@@ -13,6 +14,7 @@ route.post(
     try {
       const RecipeId = c.req.param("id");
       const { newIngredients } = c.req.valid("json");
+
       const isRecipePresent = await db.recipe.findUnique({
         where: { id: RecipeId },
       });
@@ -25,14 +27,26 @@ route.post(
       const { id: UserId } = c.get("jwtPayload");
       if (UserId !== isRecipePresent.creatorId) {
         return c.json(
-          { message: "You are not authorized for doing this action" },
+          {
+            error:
+              "You are not authorized for doing this Updating this recipe ingredients",
+          },
           401
         );
       }
-      const newIngredient = await db.ingredient.createMany({
-        data: [...newIngredients],
-      });
-      return c.json({ newIngredient }, 201);
+      let newSavedIngredients: any = [];
+      for (let i = 0; i < newIngredients.length; i++) {
+        const savedIngredient = await db.ingredient.create({
+          data: newIngredients[i],
+        });
+        newSavedIngredients.push(savedIngredient);
+      }
+      // const newIngredient = await db.ingredient.createMany({
+      //   data: [...newIngredients],
+      // });
+      console.log(newSavedIngredients);
+
+      return c.json(newSavedIngredients, 201);
     } catch (error) {
       console.log(error);
       return c.json({ error: "Internal server error" }, 500);

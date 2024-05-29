@@ -24,7 +24,8 @@ import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EditIngredientDialog } from "@/components/protected/EditIngredientDialog";
 import { ingredientsSelectType } from "@/lib/db/schema";
-
+import { objectEqual } from "@/utils/ChangeFieldFunction";
+import { useAddNewIngredientMutation } from "@/lib/api/ingredient";
 const updateRecipe = () => {
   const { recipe } = useRecipeStore();
   const { file, pickImage } = useSelectImage();
@@ -46,8 +47,32 @@ const updateRecipe = () => {
       Ingredient: previousIngredients,
     },
   });
+  const {
+    mutateAsync: AddIngredientMutate,
+    isPending: isAddIngredientPending,
+    isSuccess: isAddIngredientSuccess,
+  } = useAddNewIngredientMutation();
   const isPending = false;
-  const onSubmit = () => {};
+  const onUpdateRecipeSubmit = (
+    values: z.infer<typeof updateRecipeSchema>
+  ) => {};
+  const onAdditionIngredient = async (
+    values: z.infer<typeof updateRecipeSchema>
+  ) => {
+    const addedIngredient = values.Ingredient?.filter(
+      (ingredient) =>
+        !previousIngredients.some((y: any) => objectEqual(ingredient, y))
+    );
+    await AddIngredientMutate({ newIngredients: addedIngredient });
+  };
+  const onRemoveIngredient = (values: z.infer<typeof updateRecipeSchema>) => {
+    const removedIngredients = previousIngredients?.filter(
+      (ingredient: any) =>
+        !values.Ingredient?.some((x: any) => objectEqual(ingredient, x))
+    );
+    console.log(removedIngredients);
+  };
+
   return (
     <ScrollView
       backgroundColor={"$orange1"}
@@ -70,7 +95,8 @@ const updateRecipe = () => {
               DialogTitle="Add Ingredients"
               DialogActionTitle="Add ingredient"
               ShowIngredientSectionAddButton={true}
-              DialogAction={() => {}}
+              DialogAction={form.handleSubmit(onAdditionIngredient)}
+              isPending={isAddIngredientPending}
             >
               <Button backgroundColor={"$orange8"} width={width * 0.45}>
                 <AntDesign name="pluscircle" size={24} color="white" />
@@ -80,7 +106,8 @@ const updateRecipe = () => {
               DialogTitle="Remove Ingredients"
               DialogActionTitle="remove ingredient"
               ShowIngredientSectionAddButton={false}
-              DialogAction={() => {}}
+              DialogAction={form.handleSubmit(onRemoveIngredient)}
+              isPending={false}
             >
               <Button
                 backgroundColor={"$orange8"}
@@ -108,7 +135,7 @@ const updateRecipe = () => {
         AlertDialogActionTitle="Update"
         AlertDialogTitle="Update Recipe"
         AlertDialogDescription="Are you sure about  update this recipe"
-        AlertDialogAction={form.handleSubmit(onSubmit)}
+        AlertDialogAction={form.handleSubmit(onUpdateRecipeSubmit)}
       >
         <Button
           marginBottom={30}

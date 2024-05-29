@@ -16,7 +16,7 @@ export const ProtectRoute = async (c: Context, next: Next) => {
     }
     const user = await db.user.findUnique({ where: { id: decoded.id } });
     if (!user) {
-      return c.json({ return: "Invalid token" });
+      return c.json({ error: "Invalid token" });
     }
     c.set("jwtPayload", user);
     await next();

@@ -1,4 +1,4 @@
-import { Adapt, Button, Dialog, Sheet, XStack } from "tamagui";
+import { Adapt, Button, Dialog, Sheet, Spinner, XStack } from "tamagui";
 import IngredientSection from "./IngredientSection";
 import { FormProvider, useFormContext } from "react-hook-form";
 
@@ -7,7 +7,8 @@ interface EditIngredientDialogPropsType {
   DialogTitle: string;
   DialogActionTitle: string;
   ShowIngredientSectionAddButton: boolean;
-  DialogAction: () => any;
+  DialogAction: (values: any) => void;
+  isPending: boolean;
 }
 export const EditIngredientDialog = (props: EditIngredientDialogPropsType) => {
   const form = useFormContext();
@@ -80,8 +81,13 @@ export const EditIngredientDialog = (props: EditIngredientDialogPropsType) => {
                 color={"white"}
                 fontSize={16}
                 onPress={props.DialogAction}
+                disabled={props.isPending}
               >
-                {props.DialogActionTitle}
+                {props.isPending ? (
+                  <Spinner color={"white"} />
+                ) : (
+                  props.DialogActionTitle
+                )}
               </Button>
             </Dialog.Close>
           </XStack>
