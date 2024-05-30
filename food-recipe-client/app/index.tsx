@@ -7,8 +7,6 @@ import { View, Text } from "react-native";
 const index = () => {
   const { success, error } = useMigrations(db, migrations);
   const isAuthenticated = useRecipeStore((state) => state.isAuthenticated);
-  console.log(error);
-  console.log(success);
 
   if (isAuthenticated) {
     return Redirect({ href: "/protected/" });

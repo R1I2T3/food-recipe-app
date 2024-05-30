@@ -15,12 +15,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import RecipeActionRow from "@/components/protected/RecipeActionRow";
 import { useRecipeStore } from "@/lib/store";
+import { ingredientsSelectType } from "@/lib/db/schema";
 const RecipeScreen = () => {
   const { id } = useLocalSearchParams();
   const width = useWindowDimensions().width;
-  const { data, isPending, isError } = useGetRecipeQuery(id as string);
-  console.log("recipe");
-
+  const { isPending, isError } = useGetRecipeQuery(id as string);
+  const { recipe } = useRecipeStore();
   if (isPending) {
     return (
       <YStack
@@ -57,7 +57,7 @@ const RecipeScreen = () => {
       paddingTop={20}
     >
       <Image
-        src={data.food_image_url}
+        src={recipe?.food_image_url!}
         width={width * 0.9}
         height={width * 0.7}
         marginBottom="$5"
@@ -70,12 +70,12 @@ const RecipeScreen = () => {
             textOverflow="revert-layer"
             wordWrap="initial"
           >
-            {data?.name}
+            {recipe?.name}
           </Text>
         </View>
         <RecipeActionRow
-          creatorId={data?.creatorId as string}
-          recipeId={data?.id}
+          creatorId={recipe?.creatorId as string}
+          recipeId={recipe?.id!}
         />
       </XStack>
       <YStack marginBottom="$4">
@@ -83,7 +83,7 @@ const RecipeScreen = () => {
           Instructions
         </Text>
         <Text fontSize={"$5"} textAlign="justify">
-          {data?.instruction}
+          {recipe?.instruction}
         </Text>
       </YStack>
       <XStack justifyContent="space-between" marginBottom="$4">
@@ -91,13 +91,13 @@ const RecipeScreen = () => {
           <Text fontSize={"$5"} fontWeight={"bold"}>
             Type:{" "}
           </Text>
-          <Text fontSize={"$5"}>{data?.type}</Text>
+          <Text fontSize={"$5"}>{recipe?.type}</Text>
         </XStack>
         <XStack>
           <Text fontSize={"$5"} fontWeight={"bold"}>
             Cuisine:{" "}
           </Text>
-          <Text fontSize={"$5"}>{data?.cuisine}</Text>
+          <Text fontSize={"$5"}>{recipe?.cuisine}</Text>
         </XStack>
       </XStack>
       <YStack>
@@ -112,7 +112,7 @@ const RecipeScreen = () => {
             Quantity
           </Text>
         </XStack>
-        {data.ingredients.map((ingredient, index) => (
+        {recipe?.ingredients?.map((ingredient: ingredientsSelectType) => (
           <YStack key={ingredient.id}>
             <XStack justifyContent="space-between">
               <Text fontSize={"$5"}>{ingredient.name}</Text>

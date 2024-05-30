@@ -131,3 +131,87 @@ export const useDeleteRecipeMutation = (id: string) => {
   });
   return mutation;
 };
+
+export const useUpdateRecipeMutation = () => {
+  const router = useRouter();
+  const { recipe, setRecipe } = useRecipeStore();
+
+  const mutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const auth_token = await secureStore.getItemAsync("auth_token");
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/recipe/update/${recipe?.id!}`,
+        {
+          method: "PUT",
+          headers: {
+            Bearer: auth_token!,
+          },
+          body: data,
+        }
+      );
+      const responseData = await response.json();
+      return responseData;
+    },
+    onError: (error) => {
+      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "some server side error taken place",
+      });
+      return "error";
+    },
+    onSuccess: async (data) => {
+      if (data?.error) {
+        console.log(data.error);
+        if (data.error === "Invalid token" || data.error === "Not Authorized") {
+          await secureStore.deleteItemAsync("auth_token");
+          router.replace("/auth/");
+        }
+        Toast.show({
+          type: "error",
+          text1: data.error,
+        });
+        return "error";
+      }
+      let food_image_url;
+      console.log(data);
+
+      if (data.updateRecipe.food_image_url) {
+        const { uri: FoodImageUri } = await FileSystem.downloadAsync(
+          data.food_image_url,
+          FileSystem.documentDirectory + data.food_image_url.split("/").pop()
+        );
+        food_image_url = FoodImageUri;
+      }
+      if (data.updateRecipe) {
+        console.log("I am here");
+
+        await db
+          .update(recipeTable)
+          .set({
+            name: data.updateRecipe.name || recipe?.name,
+            instruction: data.updateRecipe.instruction || recipe?.instruction,
+            type: data.updateRecipe.type || recipe?.type,
+            cuisine: data.updateRecipe.cuisine || recipe?.cuisine,
+            food_image_url: food_image_url || recipe?.food_image_url,
+          })
+          .where(eq(recipeTable.id, recipe?.id!));
+      }
+      router.dismiss(1);
+      const updatedRecipe = (
+        await db
+          .select()
+          .from(recipeTable)
+          .where(eq(recipeTable.id, recipe?.id!))
+      )[0];
+
+      const ingredients = await db
+        .select()
+        .from(ingredientTable)
+        .where(eq(ingredientTable.recipeId, recipe?.id!));
+      setRecipe({ ...updatedRecipe, ingredients });
+      Toast.show({ type: "success", text1: "recipe updated successfully" });
+    },
+  });
+  return mutation;
+};

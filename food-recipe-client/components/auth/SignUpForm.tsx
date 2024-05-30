@@ -62,7 +62,6 @@ const SignUpForm = () => {
       formData.append("image", image as any);
       for (let [key, value] of Object.entries(values)) {
         if (!(typeof value == "string")) {
-          console.log();
           return;
         }
         formData.append(key, value);

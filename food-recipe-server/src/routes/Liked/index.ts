@@ -33,8 +33,6 @@ route.post("/add-favourite/:id", ProtectRoute, async (c) => {
 route.delete("/delete-favourite/:id", ProtectRoute, async (c) => {
   try {
     const { id: UserId } = c.get("jwtPayload");
-    console.log(UserId);
-
     const favouriteId = c.req.param("id");
     const getFavourite = await db.likedRecipe.findUnique({
       where: { id: favouriteId },

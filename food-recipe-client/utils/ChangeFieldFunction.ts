@@ -9,3 +9,23 @@ export function objectEqual(obj1: any, obj2: any) {
   }
   return true;
 }
+
+export const ProcessDataForFormUpdate = (oldValues: any, newValues: any) => {
+  const differingValues = {};
+  for (const key in oldValues) {
+    if (key === "ingredients") {
+      continue;
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(oldValues, key) &&
+      Object.prototype.hasOwnProperty.call(newValues, key)
+    ) {
+      if (oldValues[key].toString() !== newValues[key]) {
+        // @ts-expect-error:values coming from an api
+        differingValues[key] = newValues[key];
+      }
+    }
+  }
+
+  return differingValues;
+};

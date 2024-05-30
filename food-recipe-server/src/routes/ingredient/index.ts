@@ -44,8 +44,6 @@ route.post(
       // const newIngredient = await db.ingredient.createMany({
       //   data: [...newIngredients],
       // });
-      console.log(newSavedIngredients);
-
       return c.json(newSavedIngredients, 201);
     } catch (error) {
       console.log(error);

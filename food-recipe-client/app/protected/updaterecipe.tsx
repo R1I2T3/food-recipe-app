@@ -15,11 +15,16 @@ import CustomAlertDialog from "@/components/ui/CustomAlertDialog";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EditIngredientDialog } from "@/components/protected/EditIngredientDialog";
-import { objectEqual } from "@/utils/ChangeFieldFunction";
+import {
+  objectEqual,
+  ProcessDataForFormUpdate,
+} from "@/utils/ChangeFieldFunction";
 import {
   useAddNewIngredientMutation,
   useRemoveIngredientMutation,
 } from "@/lib/api/ingredient";
+import { useUpdateRecipeMutation } from "@/lib/api/recipe";
+
 const updateRecipe = () => {
   const { recipe } = useRecipeStore();
   const { file, pickImage } = useSelectImage();
@@ -44,10 +49,31 @@ const updateRecipe = () => {
     mutateAsync: RemoveIngredientMutate,
     isPending: isRemoveIngredientPending,
   } = useRemoveIngredientMutation();
-  const isPending = false;
-  const onUpdateRecipeSubmit = (
+  // const
+  const {
+    mutateAsync: UpdateRecipeMutate,
+    isPending: isUpdateRecipeMutationPending,
+  } = useUpdateRecipeMutation();
+  const onUpdateRecipeSubmit = async (
     values: z.infer<typeof updateRecipeSchema>
-  ) => {};
+  ) => {
+    const processedData = ProcessDataForFormUpdate(recipe, values);
+    const formData = new FormData();
+    if (file) {
+      formData.append("image", {
+        name: file?.fileName?.split(".")[0],
+        uri: file?.uri,
+        type: file?.mimeType,
+        size: file?.fileSize,
+      } as any);
+    }
+    for (let [key, value] of Object.entries(processedData)) {
+      if (typeof value == "string") {
+        formData.append(key, value);
+      }
+    }
+    await UpdateRecipeMutate(formData);
+  };
   const onAdditionIngredient = async (
     values: z.infer<typeof updateRecipeSchema>
   ) => {
@@ -140,9 +166,13 @@ const updateRecipe = () => {
           backgroundColor={"$orange9"}
           color={"white"}
           pressStyle={{ backgroundColor: "$orange11" }}
-          // disabled={isPending}
+          disabled={isUpdateRecipeMutationPending}
         >
-          {isPending ? <Spinner size="small" color="white" /> : "Update"}
+          {isUpdateRecipeMutationPending ? (
+            <Spinner size="small" color="white" />
+          ) : (
+            "Update"
+          )}
         </Button>
       </CustomAlertDialog>
     </ScrollView>

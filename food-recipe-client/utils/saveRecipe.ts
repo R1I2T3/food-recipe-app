@@ -8,7 +8,6 @@ export const SaveRecipe = async (data: any, id: any) => {
       data.food_image_url,
       FileSystem.documentDirectory + data.food_image_url.split("/").pop()
     );
-    console.log(data.id);
 
     const recipe = await db
       .insert(recipeTable)

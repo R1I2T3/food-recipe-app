@@ -133,6 +133,13 @@ route.put(
           food_image_url: new_food_image_url || recipe.food_image_url,
           ...validatedData,
         },
+        select: {
+          name: validatedData.name ? true : false,
+          instruction: validatedData.instruction ? true : false,
+          food_image_url: new_food_image_url ? true : false,
+          type: validatedData.type ? true : false,
+          cuisine: validatedData.cuisine ? true : false,
+        },
       });
       return c.json({ updateRecipe }, 202);
     } catch (error) {
