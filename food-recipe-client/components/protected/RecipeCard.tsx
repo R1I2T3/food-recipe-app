@@ -7,6 +7,7 @@ import React from "react";
 import { Card, Image, XStack, YStack, Text } from "tamagui";
 import { recipeSelectType } from "@/lib/db/schema";
 import { useRouter } from "expo-router";
+import { useRecipeStore } from "@/lib/store";
 const RecipeCard = ({
   data,
   setSheetState,
@@ -17,8 +18,10 @@ const RecipeCard = ({
   const width = useWindowDimensions().width;
   const imageUrl = data.food_image_url;
   const router = useRouter();
+  const { setRecipe } = useRecipeStore();
   const onPressRecipeCard = () => {
     router.push(`/protected/recipe/${data.id}`);
+    setRecipe(null);
     if (setSheetState) {
       return setSheetState(false);
     }

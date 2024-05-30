@@ -4,7 +4,6 @@ import RecipeCard from "./RecipeCard";
 import { YStack } from "tamagui";
 
 const HomeScreenPagination = ({ item }: any) => {
-  console.log(item);
   return (
     <YStack backgroundColor={"$orange1"}>
       <FlatList

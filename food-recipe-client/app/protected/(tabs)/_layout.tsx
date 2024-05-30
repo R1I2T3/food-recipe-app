@@ -5,9 +5,13 @@ import { AntDesign } from "@expo/vector-icons";
 import { useRecipeStore } from "@/lib/store";
 import { useEffect } from "react";
 const AppLayout = () => {
-  const { fetchProfile } = useRecipeStore();
+  const { fetchProfile, fetchFavourite, profile } = useRecipeStore();
   useEffect(() => {
-    fetchProfile();
+    const fetchItems = async () => {
+      await fetchProfile();
+      await fetchFavourite(profile?.id!);
+    };
+    fetchItems();
   }, []);
   return (
     <Tabs

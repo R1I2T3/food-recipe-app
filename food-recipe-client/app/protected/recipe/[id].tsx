@@ -19,9 +19,9 @@ import { ingredientsSelectType } from "@/lib/db/schema";
 const RecipeScreen = () => {
   const { id } = useLocalSearchParams();
   const width = useWindowDimensions().width;
-  const { isPending, isError } = useGetRecipeQuery(id as string);
+  const { isPending, isError, data } = useGetRecipeQuery(id as string);
   const { recipe } = useRecipeStore();
-  if (isPending) {
+  if (!recipe || isPending) {
     return (
       <YStack
         justifyContent="center"

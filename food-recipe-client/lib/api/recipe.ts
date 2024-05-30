@@ -75,6 +75,7 @@ export const useGetRecipeQuery = (id: string) => {
         .select()
         .from(ingredientTable)
         .where(eq(ingredientTable.recipeId, id));
+
       if (recipe.length === 0) {
         const response = await fetch(
           `${process.env.EXPO_PUBLIC_SERVER_URL}/recipe/get-recipe/${id}`,
@@ -87,13 +88,12 @@ export const useGetRecipeQuery = (id: string) => {
         const responseData = await response.json();
         if (responseData.recipe) {
           setRecipe(responseData.recipe);
+          return responseData.recipe;
         } else {
           throw Error("Some error taken place");
         }
-        return responseData;
       }
       const data = { ...recipe[0], Ingredient };
-
       setRecipe(data);
       return data;
     },

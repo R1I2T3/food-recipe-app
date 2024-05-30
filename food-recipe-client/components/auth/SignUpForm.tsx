@@ -67,8 +67,6 @@ const SignUpForm = () => {
         formData.append(key, value);
       }
       const data = await singUpMutate(formData);
-      console.log(data);
-
       const message = await SaveUser(data);
       if (message === "failure") {
         Toast.show({

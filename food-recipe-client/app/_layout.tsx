@@ -7,13 +7,13 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import "react-native-reanimated";
 import "@tamagui/core/reset.css";
 import { TamaguiProvider } from "tamagui";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import tamaguiConfig from "@/tamagui.config";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
+import React from "react";
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();

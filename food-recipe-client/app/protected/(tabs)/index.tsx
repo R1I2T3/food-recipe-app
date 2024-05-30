@@ -31,7 +31,6 @@ const Home = () => {
       setFilter(FilterValue);
     }
   };
-  console.log(data?.pages);
   if (error) {
     return (
       <YStack justifyContent="center" alignItems="center" flexGrow={1}>

@@ -5,9 +5,11 @@ import {
   userSelectType,
   userTable,
   recipeSelectType,
-  recipeTable,
+  likedRecipeSelectType,
+  LikedRecipeTable,
 } from "../db/schema";
 import { db } from "../db";
+import { eq } from "drizzle-orm";
 interface useRecipeStoreTypes {
   isAuthenticated: boolean;
   setIsAuthenticated: (arg: boolean) => void;
@@ -16,6 +18,8 @@ interface useRecipeStoreTypes {
   fetchProfile: () => Promise<void>;
   recipe: recipeSelectType | null;
   setRecipe: (recipe: recipeSelectType) => void;
+  FavouriteRecipes: likedRecipeSelectType[] | null;
+  fetchFavourite: (id: string) => void;
 }
 export const useRecipeStore = create<useRecipeStoreTypes>((set) => ({
   isAuthenticated: secureStore.getItem("auth_token") !== undefined,
@@ -32,4 +36,14 @@ export const useRecipeStore = create<useRecipeStoreTypes>((set) => ({
   setProfile: (user: userInsertType) => set({ profile: user }),
   recipe: null,
   setRecipe: (recipe) => set({ recipe }),
+  FavouriteRecipes: null,
+  fetchFavourite: async (id) => {
+    const favouriteRecipes = await db
+      .select()
+      .from(LikedRecipeTable)
+      .where(eq(LikedRecipeTable.userId, id));
+    console.log(favouriteRecipes);
+
+    set({ FavouriteRecipes: favouriteRecipes });
+  },
 }));
