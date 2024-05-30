@@ -3,14 +3,14 @@ import { db } from "@/lib/db";
 import { recipeTable, ingredientTable } from "@/lib/db/schema";
 import { ingredientsInsertType } from "@/lib/db/schema";
 export const SaveRecipe = async (data: any, id: any) => {
-  const { uri: FoodImageUri } = await FileSystem.downloadAsync(
-    data.food_image_url,
-    FileSystem.documentDirectory + data.food_image_url.split("/").pop()
-  );
-  console.log(data.youtube_video_link);
+  try {
+    const { uri: FoodImageUri } = await FileSystem.downloadAsync(
+      data.food_image_url,
+      FileSystem.documentDirectory + data.food_image_url.split("/").pop()
+    );
+    console.log(data.id);
 
-  const recipe = (
-    await db
+    const recipe = await db
       .insert(recipeTable)
       .values({
         id: data.id,
@@ -21,14 +21,16 @@ export const SaveRecipe = async (data: any, id: any) => {
         creatorId: id!,
         instruction: data.instruction,
       })
-      .returning({ id: recipeTable.id })
-  )[0];
-  data.Ingredient.forEach(async (value: ingredientsInsertType) => {
-    await db.insert(ingredientTable).values({
-      id: value.id,
-      name: value.name,
-      quantity: value.quantity,
-      recipeId: recipe.id,
+      .returning({ id: recipeTable.id });
+    await data.Ingredient.forEach(async (value: ingredientsInsertType) => {
+      await db.insert(ingredientTable).values({
+        id: value.id,
+        name: value.name,
+        quantity: value.quantity,
+        recipeId: recipe[0].id,
+      });
     });
-  });
+  } catch (error) {
+    console.log(error);
+  }
 };

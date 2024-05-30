@@ -94,7 +94,7 @@ export const useGetUserRecipeQuery = (id: string, recipe_length: number) => {
         );
         fetchedRecipes = await response.json();
         try {
-          fetchedRecipes.createdRecipeByUser.forEach(
+          await fetchedRecipes.createdRecipeByUser.forEach(
             async (recipe: recipeInsertType) => {
               await SaveRecipe(recipe, id);
             }

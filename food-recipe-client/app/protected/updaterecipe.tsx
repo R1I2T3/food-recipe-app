@@ -8,35 +8,24 @@ import { updateRecipeSchema } from "@/lib/zod/recipe";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import {
-  ScrollView,
-  YStack,
-  Label,
-  Button,
-  Spinner,
-  XStack,
-  Text,
-} from "tamagui";
+import { ScrollView, YStack, Label, Button, Spinner, XStack } from "tamagui";
 import { z } from "zod";
 import SelectRecipeImage from "@/components/protected/SelectRecipeImage";
 import CustomAlertDialog from "@/components/ui/CustomAlertDialog";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { useWindowDimensions } from "react-native";
 import { EditIngredientDialog } from "@/components/protected/EditIngredientDialog";
-import { ingredientsSelectType } from "@/lib/db/schema";
 import { objectEqual } from "@/utils/ChangeFieldFunction";
-import { useAddNewIngredientMutation } from "@/lib/api/ingredient";
+import {
+  useAddNewIngredientMutation,
+  useRemoveIngredientMutation,
+} from "@/lib/api/ingredient";
 const updateRecipe = () => {
   const { recipe } = useRecipeStore();
   const { file, pickImage } = useSelectImage();
   const [resetForm, setResetForm] = useState(false);
   const width = useWindowDimensions().width;
-  const previousIngredients = recipe?.ingredients?.map(
-    (ingredient: ingredientsSelectType) => ({
-      name: ingredient.name,
-      quantity: ingredient.quantity,
-    })
-  );
+  const previousIngredients = recipe?.ingredients;
   const form = useForm<z.infer<typeof updateRecipeSchema>>({
     resolver: zodResolver(updateRecipeSchema),
     defaultValues: {
@@ -50,8 +39,11 @@ const updateRecipe = () => {
   const {
     mutateAsync: AddIngredientMutate,
     isPending: isAddIngredientPending,
-    isSuccess: isAddIngredientSuccess,
   } = useAddNewIngredientMutation();
+  const {
+    mutateAsync: RemoveIngredientMutate,
+    isPending: isRemoveIngredientPending,
+  } = useRemoveIngredientMutation();
   const isPending = false;
   const onUpdateRecipeSubmit = (
     values: z.infer<typeof updateRecipeSchema>
@@ -65,12 +57,16 @@ const updateRecipe = () => {
     );
     await AddIngredientMutate({ newIngredients: addedIngredient });
   };
-  const onRemoveIngredient = (values: z.infer<typeof updateRecipeSchema>) => {
-    const removedIngredients = previousIngredients?.filter(
-      (ingredient: any) =>
-        !values.Ingredient?.some((x: any) => objectEqual(ingredient, x))
-    );
-    console.log(removedIngredients);
+  const onRemoveIngredient = async (
+    values: z.infer<typeof updateRecipeSchema>
+  ) => {
+    const removedIngredients = previousIngredients
+      ?.filter(
+        (ingredient: any) =>
+          !values.Ingredient?.some((x: any) => objectEqual(ingredient, x))
+      )
+      .map((Ingredient: any) => ({ uuid: Ingredient.id }));
+    await RemoveIngredientMutate({ deleteIngredientUUids: removedIngredients });
   };
 
   return (
@@ -107,7 +103,7 @@ const updateRecipe = () => {
               DialogActionTitle="remove ingredient"
               ShowIngredientSectionAddButton={false}
               DialogAction={form.handleSubmit(onRemoveIngredient)}
-              isPending={false}
+              isPending={isRemoveIngredientPending}
             >
               <Button
                 backgroundColor={"$orange8"}

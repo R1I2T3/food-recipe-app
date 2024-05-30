@@ -69,7 +69,7 @@ export const EditIngredientDialog = (props: EditIngredientDialogPropsType) => {
                 color={"$orange10"}
                 fontSize={16}
               >
-                Cancel
+                Close
               </Button>
             </Dialog.Close>
             <Dialog.Close displayWhenAdapted asChild>
