@@ -159,7 +159,13 @@ route.get("/get-recipes", ProtectRoute, async (c) => {
       skip: parseInt(skipQueryParam) * 10,
       take: 10,
       where: { ...query },
-      select: { food_image_url: true, name: true, type: true },
+      select: {
+        food_image_url: true,
+        name: true,
+        type: true,
+        cuisine: true,
+        id: true,
+      },
     });
     return c.json({ recipes }, 200);
   } catch (error) {

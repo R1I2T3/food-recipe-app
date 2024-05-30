@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { useRecipeStore } from "../store";
 import * as secureStore from "expo-secure-store";
@@ -66,15 +66,34 @@ export const useGetRecipeQuery = (id: string) => {
   const query = useQuery({
     queryKey: ["recipe", id],
     queryFn: async () => {
+      const auth_token = await secureStore.getItemAsync("auth_token");
       const recipe = await db
         .select()
         .from(recipeTable)
         .where(eq(recipeTable.id, id));
-      const ingredients = await db
+      const Ingredient = await db
         .select()
         .from(ingredientTable)
         .where(eq(ingredientTable.recipeId, id));
-      const data = { ...recipe[0], ingredients };
+      if (recipe.length === 0) {
+        const response = await fetch(
+          `${process.env.EXPO_PUBLIC_SERVER_URL}/recipe/get-recipe/${id}`,
+          {
+            headers: {
+              Bearer: auth_token!,
+            },
+          }
+        );
+        const responseData = await response.json();
+        if (responseData.recipe) {
+          setRecipe(responseData.recipe);
+        } else {
+          throw Error("Some error taken place");
+        }
+        return responseData;
+      }
+      const data = { ...recipe[0], Ingredient };
+
       setRecipe(data);
       return data;
     },
@@ -205,13 +224,54 @@ export const useUpdateRecipeMutation = () => {
           .where(eq(recipeTable.id, recipe?.id!))
       )[0];
 
-      const ingredients = await db
+      const Ingredient = await db
         .select()
         .from(ingredientTable)
         .where(eq(ingredientTable.recipeId, recipe?.id!));
-      setRecipe({ ...updatedRecipe, ingredients });
+      setRecipe({ ...updatedRecipe, Ingredient });
       Toast.show({ type: "success", text1: "recipe updated successfully" });
     },
   });
   return mutation;
+};
+
+export const useGetAllRecipeQuery = (param: string) => {
+  const { profile } = useRecipeStore();
+  const query = useInfiniteQuery({
+    queryKey: ["recipes", profile?.id, param],
+    queryFn: async ({ pageParam = 0 }) => {
+      let response;
+      const auth_token = await secureStore.getItemAsync("auth_token");
+      if (!param) {
+        response = await fetch(
+          `${process.env.EXPO_PUBLIC_SERVER_URL}/recipe/get-recipes?skip=${pageParam}`,
+          {
+            headers: {
+              Bearer: auth_token!,
+            },
+          }
+        );
+      } else {
+        response = await fetch(
+          `${process.env.EXPO_PUBLIC_SERVER_URL}/recipe/get-recipes?q=${param}&skip=${pageParam}`
+        );
+      }
+      const data = await response.json();
+      return {
+        data,
+        currentPage: pageParam,
+      };
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const nextPage =
+        lastPage?.data?.recipes?.length === 10
+          ? allPages?.length > 0
+            ? allPages[allPages?.length - 1].currentPage + 1
+            : 2
+          : undefined;
+      return nextPage;
+    },
+  });
+  return query;
 };

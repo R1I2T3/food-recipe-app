@@ -112,7 +112,7 @@ const RecipeScreen = () => {
             Quantity
           </Text>
         </XStack>
-        {recipe?.ingredients?.map((ingredient: ingredientsSelectType) => (
+        {recipe?.Ingredient?.map((ingredient: ingredientsSelectType) => (
           <YStack key={ingredient.id}>
             <XStack justifyContent="space-between">
               <Text fontSize={"$5"}>{ingredient.name}</Text>

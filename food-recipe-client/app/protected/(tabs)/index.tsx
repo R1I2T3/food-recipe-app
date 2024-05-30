@@ -1,7 +1,9 @@
-import { Button, YStack } from "tamagui";
-import React, { useRef, useState, useEffect } from "react";
+import { Button, Spinner, YStack, Text } from "tamagui";
+import React, { useRef, useState } from "react";
 import Header from "@/components/protected/Header";
 import { FlatList } from "react-native";
+import { useGetAllRecipeQuery } from "@/lib/api/recipe";
+import HomeScreenPagination from "@/components/protected/HomeScreenPagination";
 // import { ingredientsCollection, recipeCollection } from "@/lib/db";
 
 const Home = () => {
@@ -19,6 +21,8 @@ const Home = () => {
   ];
   const filterRef = useRef<FlatList>(null);
   const [filter, setFilter] = useState("");
+  const { data, error, status, fetchNextPage, isFetchingNextPage } =
+    useGetAllRecipeQuery(filter);
   const onPressFilter = (FilterValue: string) => {
     if (filter === FilterValue) {
       setFilter("");
@@ -27,6 +31,21 @@ const Home = () => {
       setFilter(FilterValue);
     }
   };
+  console.log(data?.pages);
+  if (error) {
+    return (
+      <YStack justifyContent="center" alignItems="center" flexGrow={1}>
+        <Text color={"$red9"}>Some error take place while fetching recipe</Text>
+      </YStack>
+    );
+  }
+  if (status === "pending") {
+    return (
+      <YStack justifyContent="center" alignItems="center" flexGrow={1}>
+        <Spinner color={"$red9"} />
+      </YStack>
+    );
+  }
   return (
     <>
       <Header />
@@ -53,6 +72,13 @@ const Home = () => {
           horizontal
         />
       </YStack>
+      <FlatList
+        onEndReached={async () => await fetchNextPage}
+        data={data?.pages!}
+        renderItem={({ item, index }) => (
+          <HomeScreenPagination item={item} key={index} />
+        )}
+      />
     </>
   );
 };

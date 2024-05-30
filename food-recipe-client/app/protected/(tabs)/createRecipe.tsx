@@ -26,7 +26,7 @@ import RecipeInstructionTextField from "@/components/protected/RecipeInstruction
 import Toast from "react-native-toast-message";
 import { useCreateRecipeMutation } from "@/lib/api/recipe";
 const createRecipe = () => {
-  const { file, pickImage } = useSelectImage();
+  const { file, pickImage, setFile } = useSelectImage();
   const [resetForm, setResetForm] = useState(false);
   const form = useForm<z.infer<typeof createRecipeSchema>>({
     resolver: zodResolver(createRecipeSchema),
@@ -63,7 +63,8 @@ const createRecipe = () => {
 
     try {
       await CreateRecipeMutate(formData);
-      setResetForm(true);
+      // setResetForm(true);
+      setFile(undefined);
       form.reset();
     } catch (error) {
       console.log(error);

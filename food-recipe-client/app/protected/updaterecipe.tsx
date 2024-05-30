@@ -30,7 +30,7 @@ const updateRecipe = () => {
   const { file, pickImage } = useSelectImage();
   const [resetForm, setResetForm] = useState(false);
   const width = useWindowDimensions().width;
-  const previousIngredients = recipe?.ingredients;
+  const previousIngredients = recipe?.Ingredient;
   const form = useForm<z.infer<typeof updateRecipeSchema>>({
     resolver: zodResolver(updateRecipeSchema),
     defaultValues: {

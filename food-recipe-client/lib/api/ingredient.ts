@@ -55,11 +55,11 @@ export const useAddNewIngredientMutation = () => {
         .select()
         .from(recipeTable)
         .where(eq(recipeTable.id, recipe?.id as string));
-      const ingredients = await db
+      const Ingredient = await db
         .select()
         .from(ingredientTable)
         .where(eq(ingredientTable.recipeId, recipe?.id as string));
-      const updateRecipeWithIngredients = { ...updatedRecipe[0], ingredients };
+      const updateRecipeWithIngredients = { ...updatedRecipe[0], Ingredient };
       setRecipe(updateRecipeWithIngredients);
     },
   });
@@ -118,11 +118,11 @@ export const useRemoveIngredientMutation = () => {
       await db
         .delete(ingredientTable)
         .where(inArray(ingredientTable.id, uuidsArray));
-      const ingredients = await db
+      const Ingredient = await db
         .select()
         .from(ingredientTable)
         .where(eq(ingredientTable.recipeId, recipe?.id as string));
-      setRecipe({ ...recipe, ingredients });
+      setRecipe({ ...recipe, Ingredient });
     },
   });
   return mutation;

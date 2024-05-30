@@ -19,7 +19,9 @@ const RecipeCard = ({
   const router = useRouter();
   const onPressRecipeCard = () => {
     router.push(`/protected/recipe/${data.id}`);
-    return setSheetState(false);
+    if (setSheetState) {
+      return setSheetState(false);
+    }
   };
   return (
     <TouchableNativeFeedback onPress={onPressRecipeCard}>

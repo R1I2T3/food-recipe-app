@@ -14,5 +14,5 @@ export const useSelectImage = () => {
       setFile(result.assets[0]);
     }
   };
-  return { file, pickImage };
+  return { file, pickImage, setFile };
 };
