@@ -9,12 +9,14 @@ import { getRelativeTime } from "@/utils";
 import { MaterialIcons } from "@expo/vector-icons";
 import MyRecipeBottomSheetProfile from "@/components/protected/MyRecipeBottomSheetProfile";
 import { Link } from "expo-router";
+import FavouriteRecipeBottomSheetProfile from "@/components/protected/FavoruiteRecipeBottomSheet";
 const Profile = () => {
   const { profile, fetchProfile } = useRecipeStore((state) => ({
     profile: state.profile,
     fetchProfile: state.fetchProfile,
   }));
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [openFavouriteSheet, setOpenFavouriteSheet] = useState(false);
   return (
     <>
       <Header />
@@ -75,14 +77,17 @@ const Profile = () => {
           <Text fontSize={"$6"} fontWeight={"bold"}>
             Your favourite recipes
           </Text>
-          <TouchableOpacity onPress={() => setSheetOpen(true)}>
+          <TouchableOpacity onPress={() => setOpenFavouriteSheet(true)}>
             <MaterialIcons
               name="favorite"
               size={30}
               color="hsl(24, 100%, 46.5%)"
             />
+            <FavouriteRecipeBottomSheetProfile
+              open={openFavouriteSheet}
+              onOpenChange={setOpenFavouriteSheet}
+            />
           </TouchableOpacity>
-          {/* <BottomSheetProfile open={sheetOpen} onOpenChange={setSheetOpen} /> */}
         </XStack>
       </YStack>
     </>

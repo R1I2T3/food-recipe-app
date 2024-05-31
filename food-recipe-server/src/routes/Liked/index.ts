@@ -30,7 +30,7 @@ route.post("/add-favourite/:id", ProtectRoute, async (c) => {
   }
 });
 
-route.delete("/delete-favourite/:id", ProtectRoute, async (c) => {
+route.delete("/delete-favourite/:id", async (c) => {
   try {
     const { id: UserId } = c.get("jwtPayload");
     const favouriteId = c.req.param("id");
@@ -56,15 +56,8 @@ route.delete("/delete-favourite/:id", ProtectRoute, async (c) => {
 
 route.get("/get-favourite-recipes/:id", ProtectRoute, async (c) => {
   try {
-    const { skip: skipQueryParam } = c.req.query();
-    if (!skipQueryParam) {
-      return c.json({ error: "Please provide query param" }, 400);
-    }
-    const skip = parseInt(skipQueryParam);
     const userID = c.req.param("id");
     const likedRecipe = await db.likedRecipe.findMany({
-      skip: skip * 10,
-      take: 10,
       where: { userId: userID },
       include: {
         LikedRecipe: {
@@ -72,6 +65,7 @@ route.get("/get-favourite-recipes/:id", ProtectRoute, async (c) => {
             food_image_url: true,
             name: true,
             type: true,
+            cuisine: true,
           },
         },
       },

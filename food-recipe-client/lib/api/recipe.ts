@@ -241,6 +241,7 @@ export const useGetAllRecipeQuery = (param: string) => {
     queryKey: ["recipes", profile?.id, param],
     queryFn: async ({ pageParam = 0 }) => {
       let response;
+
       const auth_token = await secureStore.getItemAsync("auth_token");
       if (!param) {
         response = await fetch(
@@ -253,7 +254,12 @@ export const useGetAllRecipeQuery = (param: string) => {
         );
       } else {
         response = await fetch(
-          `${process.env.EXPO_PUBLIC_SERVER_URL}/recipe/get-recipes?q=${param}&skip=${pageParam}`
+          `${process.env.EXPO_PUBLIC_SERVER_URL}/recipe/get-recipes?skip=${pageParam}&q=${param}`,
+          {
+            headers: {
+              Bearer: auth_token!,
+            },
+          }
         );
       }
       const data = await response.json();
@@ -265,7 +271,7 @@ export const useGetAllRecipeQuery = (param: string) => {
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
       const nextPage =
-        lastPage?.data?.recipes?.length === 10
+        lastPage?.data?.recipes?.length === 7
           ? allPages?.length > 0
             ? allPages[allPages?.length - 1].currentPage + 1
             : 2

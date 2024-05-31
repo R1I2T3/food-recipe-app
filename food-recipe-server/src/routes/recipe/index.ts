@@ -151,13 +151,21 @@ route.put(
 
 route.get("/get-recipes", ProtectRoute, async (c) => {
   try {
-    const { skip: skipQueryParam, ...query } = c.req.query();
+    const { skip: skipQueryParam, q } = c.req.query();
     if (!skipQueryParam) {
       return c.json({ error: "Please provide skip query param" }, 400);
     }
+    const query: any = {};
+    if (q === "Veg" || q === "NonVeg") {
+      query["type"] = q;
+    } else {
+      query["cuisine"] = q;
+    }
+    console.log(query);
+
     const recipes = await db.recipe.findMany({
-      skip: parseInt(skipQueryParam) * 10,
-      take: 10,
+      skip: parseInt(skipQueryParam) * 7,
+      take: 7,
       where: { ...query },
       select: {
         food_image_url: true,

@@ -1,4 +1,4 @@
-import { Button, Spinner, YStack, Text } from "tamagui";
+import { Button, Spinner, YStack, Text, XStack } from "tamagui";
 import React, { useRef, useState } from "react";
 import Header from "@/components/protected/Header";
 import { FlatList } from "react-native";
@@ -45,6 +45,9 @@ const Home = () => {
       </YStack>
     );
   }
+  const onEndReached = async () => {
+    await fetchNextPage();
+  };
   return (
     <>
       <Header />
@@ -72,10 +75,18 @@ const Home = () => {
         />
       </YStack>
       <FlatList
-        onEndReached={async () => await fetchNextPage}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.8}
         data={data?.pages!}
         renderItem={({ item, index }) => (
           <HomeScreenPagination item={item} key={index} />
+        )}
+        ListFooterComponent={() => (
+          <XStack justifyContent="center" backgroundColor={"$orange1"}>
+            {isFetchingNextPage ? (
+              <Spinner color={"$orange9"} size="large" />
+            ) : null}
+          </XStack>
         )}
       />
     </>

@@ -3,29 +3,17 @@ import React, { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Sheet, Spinner, XStack, YStack } from "tamagui";
 import type { SheetProps } from "tamagui";
-import { useGetUserRecipeQuery } from "@/lib/api/user";
 import { FlatList } from "react-native";
 import RecipeCard from "./RecipeCard";
-import { db } from "@/lib/db";
-import { recipeTable } from "@/lib/db/schema";
-import { count, eq } from "drizzle-orm";
-import { useRecipeStore } from "@/lib/store";
-const MyRecipeBottomSheetProfile = (props: SheetProps) => {
-  const { profile } = useRecipeStore();
-  const [recipeLength, setRecipeLength] = useState(2);
-  let recipe_length;
-  const getRecipeLength = async () => {
-    const fetchedData = await db
-      .select({ count: count() })
-      .from(recipeTable)
-      .where(eq(recipeTable.creatorId, profile.id!));
-    setRecipeLength(fetchedData[0].count);
-  };
-  getRecipeLength();
-  const { data, isPending, isError } = useGetUserRecipeQuery(
-    profile?.id,
-    recipeLength
-  );
+import { useGetFavouriteRecipeQuery } from "@/lib/api/Favourite";
+const FavouriteRecipeBottomSheetProfile = (props: SheetProps) => {
+  const { isPending, data, isError } = useGetFavouriteRecipeQuery();
+  const LikedRecipeData = data?.likedRecipe?.map((likedRecipe: any) => ({
+    ...likedRecipe?.LikedRecipe,
+    LikedId: likedRecipe.id,
+    id: likedRecipe.recipeId,
+  }));
+
   return (
     <Sheet
       animation="medium"
@@ -70,12 +58,12 @@ const MyRecipeBottomSheetProfile = (props: SheetProps) => {
           </YStack>
         ) : null}
         <FlatList
-          data={data}
-          keyExtractor={(item) => item.id}
+          data={LikedRecipeData}
+          keyExtractor={(item) => item.LikedId}
           renderItem={({ item }) => (
             <RecipeCard
               data={item}
-              key={item.id}
+              key={item.LikedId}
               setSheetState={props.onOpenChange}
             />
           )}
@@ -86,4 +74,4 @@ const MyRecipeBottomSheetProfile = (props: SheetProps) => {
   );
 };
 
-export default MyRecipeBottomSheetProfile;
+export default FavouriteRecipeBottomSheetProfile;

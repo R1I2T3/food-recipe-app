@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRecipeStore } from "../store";
 import * as secureStore from "expo-secure-store";
 import Toast from "react-native-toast-message";
@@ -103,4 +103,25 @@ export const useRemoveFavouriteMutation = () => {
     },
   });
   return mutation;
+};
+
+export const useGetFavouriteRecipeQuery = () => {
+  const { profile } = useRecipeStore();
+  const query = useQuery({
+    queryKey: ["favourite-recipe", profile?.id],
+    queryFn: async () => {
+      const auth_token = await secureStore.getItemAsync("auth_token");
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_SERVER_URL}/favourite/get-favourite-recipes/${profile?.id}`,
+        {
+          headers: {
+            Bearer: auth_token!,
+          },
+        }
+      );
+      const responseData = await response.json();
+      return responseData;
+    },
+  });
+  return query;
 };

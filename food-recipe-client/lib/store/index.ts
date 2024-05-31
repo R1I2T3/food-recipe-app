@@ -42,8 +42,6 @@ export const useRecipeStore = create<useRecipeStoreTypes>((set) => ({
       .select()
       .from(LikedRecipeTable)
       .where(eq(LikedRecipeTable.userId, id));
-    console.log(favouriteRecipes);
-
     set({ FavouriteRecipes: favouriteRecipes });
   },
 }));
